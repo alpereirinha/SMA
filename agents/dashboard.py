@@ -1,9 +1,5 @@
 from spade.agent import Agent
 
-## Server Setup
-XMPP_SERVER = '@sara-pc'
-PASSWORD = '1234'
-
 ## Plane/Station Types
 SHIPPING = 0
 PASSENGERS = 1

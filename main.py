@@ -68,7 +68,7 @@ if __name__ == '__main__':
         p.start()
 
     # Setup Runways/Stations
-    # ...
+    # TODO
 
     while controlTower.is_alive():
         try:
