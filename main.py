@@ -4,8 +4,8 @@ from agents.plane import PlaneAgent
 from agents.dashboard import DashboardAgent
 from classes.runway import Runway
 from classes.station import Station
-from classes.planeInfo import PlaneInfo
 from spade import quit_spade
+import time
 
 ## Server Setup
 XMPP_SERVER = '@sara-pc'
@@ -30,30 +30,53 @@ OCCUPIED = 1
 
 if __name__ == '__main__':
 
-    controlTower_jid = "user1" + XMPP_SERVER
-    stationManager_jid = "user2" + XMPP_SERVER
-    plane_jid = "user3" + XMPP_SERVER
-    dashboard_jid = "user4" + XMPP_SERVER
-
+    dashboard_jid = "dashboard" + XMPP_SERVER
+    controlTower_jid = "controltower" + XMPP_SERVER
+    stationManager_jid = "stationmanager" + XMPP_SERVER
+    
+    dashboard = DashboardAgent(dashboard_jid, PASSWORD)
     controlTower = ControlTowerAgent(controlTower_jid, PASSWORD)
     stationManager = StationManagerAgent(stationManager_jid, PASSWORD)
-    plane = PlaneAgent(plane_jid, PASSWORD)
-    dashboard = DashboardAgent(dashboard_jid, PASSWORD)
+    
+    res_controlTower = controlTower.start()
+    res_controlTower.result()
 
-    # needs container
+    # Setup starting planes
+    planes = []
+    MAX = 5
+    for i in range(1, MAX):
+        plane_jid = "plane" + str(i) + XMPP_SERVER
+        plane = PlaneAgent(plane_jid, PASSWORD)
+        plane.set('company', 'Test Company')
+        plane.set('origin', 'Test Origin')
+        plane.set('destination', 'Test Destination')
+        plane.set('controlTower_jid', controlTower_jid)
 
-    # Starting Planes
-    #starting_planes = {}
-    #starting_planes[1] = PlaneInfo('Test Company', 'Origin', 'Destination', SHIPPING, FLYING)
-    #starting_planes[2] = PlaneInfo('Test Company', 'Origin', 'Destination', PASSENGERS, FLYING)
-    #starting_planes[3] = PlaneInfo('Test Company', 'Origin', 'Destination', SHIPPING, LANDED)
-    #starting_planes[4] = PlaneInfo('Test Company', 'Origin', 'Destination', PASSENGERS, LANDED)
-    #planes.set('planes', starting_planes)
+        if i%2:
+            plane.set('type', SHIPPING)
+        else:
+            plane.set('type', LANDING)
+
+        if i <= MAX/2:
+            plane.set('state', FLYING)
+        else:
+            plane.set('state', LANDED)
+
+        planes.append(plane)
+
+    for p in planes:
+        p.start()
 
     # Setup Runways/Stations
+    # ...
 
+    while controlTower.is_alive():
+        try:
+            time.sleep(1)
+        except KeyboardInterrupt:
+            controlTower.stop()
+            for p in planes:
+                p.stop()
+            break
 
-    #future = controlTower.start()
-    #future.result()
-
-    #quit_spade()
+    quit_spade()

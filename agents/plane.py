@@ -1,6 +1,5 @@
 from spade.agent import Agent
-from behaviours.reqLanding import reqLandingBehav
-from behaviours.reqTakeoff import reqTakeoffBehav
+from behaviours.sendPlaneReq import sendPlaneReqBehav
 
 SHIPPING = 0
 PASSENGERS = 1
@@ -10,23 +9,11 @@ LANDED = 1
 
 class PlaneAgent(Agent):
 
-    id = 0
-    company = ''
-    origin = ''
-    destination = ''
-    type = SHIPPING
-    state = FLYING
-
     async def setup(self):
-        print('Starting Plane...')
+        print(f'Starting Plane...')
 
-        if self.state == FLYING:
-            behav_reqLanding = reqLandingBehav()
-            self.add_behaviour(behav_reqLanding)
-
-        elif self.state == LANDED:
-            behav_reqTakeoff = reqTakeoffBehav()
-            self.add_behaviour(behav_reqTakeoff)
+        behav_sendPlaneReq = sendPlaneReqBehav()
+        self.add_behaviour(behav_sendPlaneReq)
 
         # receiver confirmation...
 
