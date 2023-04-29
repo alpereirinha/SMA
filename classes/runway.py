@@ -1,10 +1,10 @@
 
-LANDING = 0
-TAKEOFF = 1
-MULTI = 2
+#LANDING = 0
+#TAKEOFF = 1
+#MULTI = 2
 
-FREE = 0
-OCCUPIED = 1
+#FREE = 0
+#OCCUPIED = 1
 
 class Runway:
     def __init__(self, id, x, y, type, state):

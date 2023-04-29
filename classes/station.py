@@ -1,9 +1,9 @@
 
-SHIPPING = 0
-PASSENGERS = 1
+#SHIPPING = 0
+#PASSENGERS = 1
 
-FREE = 0
-OCCUPIED = 1
+#FREE = 0
+#OCCUPIED = 1
 
 class Station:
     def __init__(self, id, x, y, type, state):
