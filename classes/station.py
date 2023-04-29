@@ -1,17 +1,11 @@
 
-#SHIPPING = 0
-#PASSENGERS = 1
-
-#FREE = 0
-#OCCUPIED = 1
-
 class Station:
-    def __init__(self, id, x, y, type, state):
-        self.id = id
+    def __init__(self, x, y, type, state, plane):
         self.x = x
         self.y = y
-        self.type = type #shipping/passengers
-        self.state = state #free/occupied
+        self.type = type # SHIPPING / PASSENGERS
+        self.state = state # FREE / OCCUPIED
+        self.landed_plane = plane
 
     def __str__(self):
         return f'Station {self.id} at ({self.x}, {self.y}), Type {self.type}. Currently {self.state}.'

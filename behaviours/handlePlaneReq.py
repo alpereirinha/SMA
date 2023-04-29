@@ -22,25 +22,21 @@ class handlePlaneReqBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 request_type = msg_data.getRequestType()
 
-                ## Process LANDING request
+                ## Process request
                 if request_type == LANDING:
                     print(f'Received landing request from {msg._sender}.')
-                    
-                    # send req to station manager + handle landing TODO
-
-                ## Process TAKEOFF request
-                elif request_type == TAKEOFF:
+                else:
                     print(f'Received takeoff request from {msg._sender}.')
-                    
-                    # send req to station manager + handle takeoff TODO
+                
+                ## Request info from Station Manager
+                station_msg = Message(to=self.get("stationManager_jid"))
+                station_msg.body = msg.body
+                station_msg.set_metadata("performative", "request")
+                await self.send(station_msg)
 
             ## Cancel LANDING request
             elif performative == "cancel_request":
                 print(f'{msg._sender} cancelled their landing request and will head to another airport.')
-
-            ## Received invalid request
-            else:
-                print(f'Invalid Message.')
         
         ## Timed out
         else:

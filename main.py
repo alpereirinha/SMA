@@ -6,6 +6,7 @@ from classes.runway import Runway
 from classes.station import Station
 from spade import quit_spade
 import time
+import random
 
 ## Server Setup
 XMPP_SERVER = '@sara-pc'
@@ -38,8 +39,32 @@ if __name__ == '__main__':
     controlTower = ControlTowerAgent(controlTower_jid, PASSWORD)
     stationManager = StationManagerAgent(stationManager_jid, PASSWORD)
     
+    controlTower.set('stationManager_jid', stationManager_jid)
+    controlTower.set('dashboard_jid', dashboard_jid)
     res_controlTower = controlTower.start()
     res_controlTower.result()
+
+    # Setup Runways/Stations
+    runways = []
+    stations = []
+    
+    runways.append(Runway(50, 50, LANDING, FREE))
+    runways.append(Runway(0, 0, TAKEOFF, FREE))
+    stationManager.set("runways", runways)
+
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, FREE, None))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, FREE, None))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, FREE, None))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, FREE, None))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, OCCUPIED, 'plane3@sara-pc'))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, OCCUPIED, 'plane4@sara-pc'))
+    stationManager.set("stations", stations)
+
+    res_stationManager = stationManager.start()
+    res_stationManager.result()
+
+    res_dashboard = dashboard.start()
+    res_dashboard.result()
 
     # Setup starting planes
     planes = []
@@ -55,7 +80,7 @@ if __name__ == '__main__':
         if i%2:
             plane.set('type', SHIPPING)
         else:
-            plane.set('type', LANDING)
+            plane.set('type', PASSENGERS)
 
         if i <= MAX/2:
             plane.set('state', FLYING)
@@ -67,14 +92,13 @@ if __name__ == '__main__':
     for p in planes:
         p.start()
 
-    # Setup Runways/Stations
-    # TODO
-
     while controlTower.is_alive():
         try:
             time.sleep(1)
         except KeyboardInterrupt:
             controlTower.stop()
+            stationManager.stop()
+            dashboard.stop()
             for p in planes:
                 p.stop()
             break
