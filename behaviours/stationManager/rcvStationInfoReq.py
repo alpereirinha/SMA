@@ -39,7 +39,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
 
                         # Check stations
                         for s in self.stations:
-                            if s.type == plane_type and not s.plane and None:
+                            if s.type == plane_type and not s.plane:
                                 available_stations.append(s)
 
                         # If station available

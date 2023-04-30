@@ -9,18 +9,12 @@ class StationInfo:
         self.distance = dist # distance between station/runway
         
     def __str__(self):
-        if self.distance > 0:
-            if self.request_action == Action.LANDING:
-                location = f'station at {self.station_coords}'
-            else:
-                location = f'runway at {self.runway_coords}'
-
-            str = f'{self.request_action.name} Approved: {self.plane_id} to {location}.'
-        
+        if self.request_action == Action.LANDING:
+            location = f'station at {self.station_coords}'
         else:
-            str = f'Delayed {self.request_action.name} of {self.plane_id}.'
-        
-        return str
+            location = f'runway at {self.runway_coords}'
+
+        return f'{self.request_action.name} Approved: {self.plane_id} to {location}.'
     
     def getPlaneId(self):
         return self.plane_id
