@@ -15,7 +15,5 @@ class PlaneAgent(Agent):
         behav_sendPlaneReq = sendPlaneReqBehav()
         self.add_behaviour(behav_sendPlaneReq)
 
-        # receiver confirmation...
-
         
         

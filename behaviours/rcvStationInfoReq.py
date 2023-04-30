@@ -14,7 +14,7 @@ PASSENGERS = 1
 FREE = 0
 OCCUPIED = 1
 
-class handleStationInfoReqBehav(CyclicBehaviour):
+class rcvStationInfoReqBehav(CyclicBehaviour):
 
     async def on_start(self):
         self.runways = self.get("runways")

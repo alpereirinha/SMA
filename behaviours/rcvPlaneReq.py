@@ -9,7 +9,7 @@ PASSENGERS = 1
 LANDING = 0
 TAKEOFF = 1
 
-class handlePlaneReqBehav(CyclicBehaviour):
+class rcvPlaneReqBehav(CyclicBehaviour):
     
     async def run(self):
         msg = await self.receive(timeout=30)

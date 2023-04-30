@@ -3,7 +3,7 @@ from spade.message import Message
 from messages.stationInfo import StationInfo
 import jsonpickle
 
-class handleStationReplyBehav(CyclicBehaviour):
+class rcvStationInfoBehav(CyclicBehaviour):
 
     async def run(self):
         msg = await self.receive(timeout=30)

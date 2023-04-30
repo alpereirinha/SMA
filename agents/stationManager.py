@@ -1,10 +1,10 @@
 from spade.agent import Agent
-from behaviours.handleStationInfoReq import handleStationInfoReqBehav
+from behaviours.rcvStationInfoReq import rcvStationInfoReqBehav
 
 class StationManagerAgent(Agent):
 
     async def setup(self):
         print('Starting Station Manager...')
 
-        behav_handleStationInfoReq = handleStationInfoReqBehav()
-        self.add_behaviour(behav_handleStationInfoReq)
+        behav_rcvStationInfoReq = rcvStationInfoReqBehav()
+        self.add_behaviour(behav_rcvStationInfoReq)
