@@ -3,6 +3,7 @@ from spade.message import Message
 from messages.planeRequest import PlaneRequest
 from messages.stationInfo import StationInfo
 from classes.enums import *
+import math
 import jsonpickle
 
 class rcvStationInfoReqBehav(CyclicBehaviour):
@@ -21,6 +22,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
             if performative == "request":
                 msg_data = jsonpickle.decode(msg.body)
                 req_action = msg_data.getRequestAction()
+                plane_id = str(msg_data.getPlaneId())
                 
                 # Check runways
                 available_runways = []
@@ -43,12 +45,13 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
 
                         # If station available
                         if len(available_stations) > 0 :
-                            # TODO - check distances between available stations and runways
-                            runway_dist = 12
-                            station_dist = 12
+                            
+                            # Pick first available runway, check distance to available stations
+                            station_dist = get_closest_dist(available_runways[0], available_stations)
 
+                            # Notify Control Tower
                             reply_msg = msg.make_reply()
-                            info = StationInfo(msg_data.getPlaneId(), runway_dist, station_dist)
+                            info = StationInfo(plane_id, req_action, 100, station_dist)
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "confirm")
                             await self.send(reply_msg)    
@@ -56,17 +59,23 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         # If no station available
                         else:
                             reply_msg = msg.make_reply()
-                            reply_msg.body = str(msg_data.getPlaneId())
+                            reply_msg.body = plane_id
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
 
                     # If TAKEOFF check for closest runway
                     else:
-                        # TODO - find current station, check distance to available runways
-                        runway_dist = 12
+                        runway_dist = 0
+                        for s in self.stations:
+                            # Find current station
+                            if s.plane == plane_id:
+                                # Check distance to available runways
+                                runway_dist = get_closest_dist(s, available_runways)
+                                break
 
+                        # Notify Control Tower
                         reply_msg = msg.make_reply()
-                        info = StationInfo(msg_data.getPlaneId(), runway_dist, 0)
+                        info = StationInfo(plane_id, req_action, runway_dist, 0)
                         reply_msg.body = jsonpickle.encode(info)
                         reply_msg.set_metadata("performative", "confirm")
                         await self.send(reply_msg)          
@@ -74,10 +83,24 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                 # If no available runway
                 else:
                     reply_msg = msg.make_reply()
-                    reply_msg.body = str(msg_data.getPlaneId())
+                    reply_msg.body = plane_id
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)
 
         ## Time out       
         else:
             pass
+
+
+def get_closest_dist(start, locations):
+    min_dist = 999999
+    
+    for loc in locations:
+        dist = calc_dist(start.coordinates, loc.coordinates)
+        if dist < min_dist:
+            min_dist = dist
+
+    return math.ceil(min_dist)
+
+def calc_dist(origin, dest):
+    return math.sqrt( ((origin[0] - dest[0])**2) + ((origin[1] - dest[1])**2) )

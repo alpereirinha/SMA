@@ -71,10 +71,8 @@ if __name__ == '__main__':
         else:
             plane.set('state', PlaneState.LANDED)
 
+        plane.start()
         planes.append(plane)
-
-    for p in planes:
-        p.start()
 
     while controlTower.is_alive():
         try:
