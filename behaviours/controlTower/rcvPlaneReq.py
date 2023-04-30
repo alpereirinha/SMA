@@ -1,7 +1,5 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
-from messages.planeRequest import PlaneRequest
-import jsonpickle
 
 class rcvPlaneReqBehav(CyclicBehaviour):
     
@@ -13,8 +11,12 @@ class rcvPlaneReqBehav(CyclicBehaviour):
             
             ## Received valid landing/takeoff request
             if performative == "request":
-                msg_data = jsonpickle.decode(msg.body)
-                print('Received', msg_data)
+
+                ## Notify Dashboard
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = msg.body
+                dashboard_msg.set_metadata("performative", "plane_request")
+                await self.send(dashboard_msg)
                 
                 ## Request info from Station Manager
                 station_msg = Message(to=self.get("stationManager_jid"))
@@ -24,7 +26,12 @@ class rcvPlaneReqBehav(CyclicBehaviour):
 
             ## Cancel LANDING request
             elif performative == "cancel_request":
-                print(f'{msg._sender} cancelled their landing request and will head to another airport.')
+                
+                ## Notify Dashboard
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = msg.body
+                dashboard_msg.set_metadata("performative", "cancel_plane_request")
+                await self.send(dashboard_msg)
         
         ## Timed out
         else:

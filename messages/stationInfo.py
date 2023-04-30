@@ -1,19 +1,21 @@
 from classes.enums import Action
 
 class StationInfo:
-    def __init__(self, plane_id, request_action, dist):
+    def __init__(self, plane_id, request_action, runway_coords, station_coords, dist):
         self.plane_id = plane_id
         self.request_action = request_action # LANDING / TAKEOFF
-        self.distance = dist # distance to station/runway
+        self.runway_coords = runway_coords
+        self.station_coords = station_coords
+        self.distance = dist # distance between station/runway
         
     def __str__(self):
         if self.distance > 0:
             if self.request_action == Action.LANDING:
-                location = 'station'
+                location = f'station at {self.station_coords}'
             else:
-                location = 'runway'
+                location = f'runway at {self.runway_coords}'
 
-            str = f'{self.request_action.name} Approved: {self.plane_id} to {location} at distance {self.distance}.'
+            str = f'{self.request_action.name} Approved: {self.plane_id} to {location}.'
         
         else:
             str = f'Delayed {self.request_action.name} of {self.plane_id}.'
@@ -26,6 +28,12 @@ class StationInfo:
     def getRequestAction(self):
         return self.request_action
     
+    def getRunwayCoords(self):
+        return self.runway_coords
+    
+    def getStationCoords(self):
+        return self.station_coords
+    
     def getDistance(self):
         return self.distance
     
@@ -34,6 +42,12 @@ class StationInfo:
 
     def setRequestAction(self, request_action):
         self.request_action = request_action
+
+    def setRunwayCoords(self, runway_coords):
+        self.runway_coords = runway_coords
+
+    def setStationCoords(self, station_coords):
+        self.station_coords = station_coords
 
     def setDistance(self, distance):
         self.distance = distance

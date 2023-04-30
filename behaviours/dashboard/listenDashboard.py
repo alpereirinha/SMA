@@ -11,8 +11,16 @@ class listenDashboardBehav(CyclicBehaviour):
         if msg:
             performative = msg.get_metadata("performative")
 
-            if performative == "request":
-                pass
+            ## Control Tower received landing/takeoff request
+            if performative == "plane_request":
+                msg_data = jsonpickle.decode(msg.body)
+                print('Received', msg_data)
+
+            ## Plane cancelled landing request
+            elif performative == "cancel_plane_request":
+                print(f'{msg.body} cancelled their landing request and will head to another airport.')
+
+            # elif TODO ...
 
         else:
             pass
