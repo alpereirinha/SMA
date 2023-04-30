@@ -1,6 +1,6 @@
 from spade.agent import Agent
-from behaviours.sendPlaneReq import sendPlaneReqBehav
-from behaviours.listenPlaneUpdates import listenPlaneUpdatesBehav
+from behaviours.plane.sendPlaneReq import sendPlaneReqBehav
+from behaviours.plane.listenPlaneUpdates import listenPlaneUpdatesBehav
 
 class PlaneAgent(Agent):
 

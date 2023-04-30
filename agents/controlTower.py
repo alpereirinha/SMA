@@ -1,6 +1,6 @@
 from spade.agent import Agent
-from behaviours.rcvPlaneReq import rcvPlaneReqBehav
-from behaviours.rcvStationInfo import rcvStationInfoBehav
+from behaviours.controlTower.rcvPlaneReq import rcvPlaneReqBehav
+from behaviours.controlTower.rcvStationInfo import rcvStationInfoBehav
 
 class ControlTowerAgent(Agent):
 

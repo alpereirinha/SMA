@@ -1,6 +1,6 @@
 from spade.agent import Agent
-from behaviours.rcvStationInfoReq import rcvStationInfoReqBehav
-from behaviours.listenStationUpdates import listenStationUpdatesBehav
+from behaviours.stationManager.rcvStationInfoReq import rcvStationInfoReqBehav
+from behaviours.stationManager.listenStationUpdates import listenStationUpdatesBehav
 
 class StationManagerAgent(Agent):
 
