@@ -4,6 +4,7 @@ from agents.plane import PlaneAgent
 from agents.dashboard import DashboardAgent
 from classes.runway import Runway
 from classes.station import Station
+from classes.enums import *
 from spade import quit_spade
 import time
 import random
@@ -11,23 +12,6 @@ import random
 ## Server Setup
 XMPP_SERVER = '@sara-pc'
 PASSWORD = '1234'
-
-## Plane/Station Types
-SHIPPING = 0
-PASSENGERS = 1
-
-## Runway Types
-LANDING = 0
-TAKEOFF = 1
-MULTI = 2
-
-## Plane States
-FLYING = 0
-LANDED = 1
-
-## Station/Runway States
-FREE = 0
-OCCUPIED = 1
 
 if __name__ == '__main__':
 
@@ -48,16 +32,16 @@ if __name__ == '__main__':
     runways = []
     stations = []
     
-    runways.append(Runway(50, 50, LANDING, FREE))
-    runways.append(Runway(0, 0, TAKEOFF, FREE))
+    runways.append(Runway(50, 50, Action.LANDING, ''))
+    runways.append(Runway(0, 0, Action.TAKEOFF, ''))
     stationManager.set("runways", runways)
 
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, FREE, None))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, FREE, None))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, FREE, None))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, FREE, None))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PASSENGERS, OCCUPIED, 'plane3@sara-pc'))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), SHIPPING, OCCUPIED, 'plane4@sara-pc'))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, ''))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, ''))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, ''))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, ''))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, 'plane3@sara-pc'))
+    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, 'plane4@sara-pc'))
     stationManager.set("stations", stations)
 
     res_stationManager = stationManager.start()
@@ -78,14 +62,14 @@ if __name__ == '__main__':
         plane.set('controlTower_jid', controlTower_jid)
 
         if i%2:
-            plane.set('type', SHIPPING)
+            plane.set('type', PlaneType.SHIPPING)
         else:
-            plane.set('type', PASSENGERS)
+            plane.set('type', PlaneType.PASSENGERS)
 
         if i <= MAX/2:
-            plane.set('state', FLYING)
+            plane.set('state', PlaneState.FLYING)
         else:
-            plane.set('state', LANDED)
+            plane.set('state', PlaneState.LANDED)
 
         planes.append(plane)
 

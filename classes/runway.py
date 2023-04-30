@@ -1,9 +1,14 @@
 
 class Runway:
-    def __init__(self, x, y, type, state):
+    def __init__(self, x, y, action_type, plane):
         self.coordinates = (x, y)
-        self.type = type # LANDING / TAKEOFF / MULTI
-        self.state = state # FREE / OCCUPIED
+        self.action_type = action_type # LANDING / TAKEOFF / MULTI
+        self.plane = plane # '' / plane id
 
     def __str__(self):
-        return f'Runway {self.id} at {self.coordinates}, Type {self.type}. Currently {self.state}.'
+        if self.plane:
+            plane_str = f'holding {self.plane}.'
+        else:
+            plane_str = 'free.'
+        
+        return f'Runway at {self.coordinates}, Type {self.action_type.name}. Currently ' + plane_str

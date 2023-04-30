@@ -1,27 +1,27 @@
 
 class PlaneRequest:
-    def __init__(self, plane_jid, plane_type, request_type):
-        self.plane_jid = plane_jid
+    def __init__(self, plane_id, plane_type, request_action):
+        self.plane_id = plane_id
         self.plane_type = plane_type # SHIPPING / PASSENGERS
-        self.request_type = request_type # LANDING / TAKEOFF
+        self.request_action = request_action # LANDING / TAKEOFF
 
     def __str__(self):
-        return f'Request for {self.request_type}: Plane {self.plane_jid}, Type {self.plane_type}.'
+        return f'Request for {self.request_action.name}: Plane {self.plane_id}, Type {self.plane_type.name}.'
 
-    def getPlaneJid(self):
-        return self.plane_jid
+    def getPlaneId(self):
+        return self.plane_id
     
     def getPlaneType(self):
         return self.plane_type
     
-    def getRequestType(self):
-        return self.request_type
+    def getRequestAction(self):
+        return self.request_action
     
-    def setPlaneJid(self, plane_jid):
-        self.plane_jid = plane_jid
+    def setPlaneId(self, plane_id):
+        self.plane_id = plane_id
 
     def setPlaneType(self, plane_type):
         self.plane_type = plane_type
 
-    def setRequestType(self, request_type):
-        self.request_type = request_type
+    def setRequestAction(self, request_action):
+        self.request_action = request_action

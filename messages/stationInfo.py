@@ -1,14 +1,14 @@
 class StationInfo:
-    def __init__(self, plane_jid, runway_dist, station_dist):
-        self.plane_jid = plane_jid
+    def __init__(self, plane_id, runway_dist, station_dist):
+        self.plane_id = plane_id
         self.runway_distance = runway_dist
         self.station_distance = station_dist # 0 if already at station
         
     def __str__(self):
-        return f'Plane {self.plane_jid} to runway at distance {self.runway_distance}, and to station at distance {self.station_distance}.'
+        return f'Plane {self.plane_id} to runway at distance {self.runway_distance}, and to station at distance {self.station_distance}.'
     
-    def getPlaneJid(self):
-        return self.plane_jid
+    def getPlaneId(self):
+        return self.plane_id
     
     def getRunwayDistance(self):
         return self.runway_distance
@@ -16,8 +16,8 @@ class StationInfo:
     def getStationDistance(self):
         return self.station_distance
     
-    def setPlaneJid(self, plane_jid):
-        self.plane_jid = plane_jid
+    def setPlaneId(self, plane_id):
+        self.plane_id = plane_id
 
     def setRunwayDistance(self, runway_distance):
         self.runway_distance = runway_distance

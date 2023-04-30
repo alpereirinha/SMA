@@ -3,12 +3,6 @@ from spade.message import Message
 from messages.planeRequest import PlaneRequest
 import jsonpickle
 
-SHIPPING = 0
-PASSENGERS = 1
-
-LANDING = 0
-TAKEOFF = 1
-
 class rcvPlaneReqBehav(CyclicBehaviour):
     
     async def run(self):
@@ -20,13 +14,7 @@ class rcvPlaneReqBehav(CyclicBehaviour):
             ## Received valid landing/takeoff request
             if performative == "request":
                 msg_data = jsonpickle.decode(msg.body)
-                request_type = msg_data.getRequestType()
-
-                ## Process request
-                if request_type == LANDING:
-                    print(f'Received landing request from {msg._sender}.')
-                else:
-                    print(f'Received takeoff request from {msg._sender}.')
+                print('Received', msg_data)
                 
                 ## Request info from Station Manager
                 station_msg = Message(to=self.get("stationManager_jid"))

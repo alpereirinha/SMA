@@ -1,12 +1,6 @@
 from spade.agent import Agent
 from behaviours.sendPlaneReq import sendPlaneReqBehav
 
-SHIPPING = 0
-PASSENGERS = 1
-
-FLYING = 0
-LANDED = 1
-
 class PlaneAgent(Agent):
 
     async def setup(self):
