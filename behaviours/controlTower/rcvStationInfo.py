@@ -14,8 +14,13 @@ class rcvStationInfoBehav(CyclicBehaviour):
 
             if performative == "confirm":
                 msg_data = jsonpickle.decode(msg.body)
-                print(msg_data)
                 req_action = msg_data.getRequestAction()
+
+                # Notify Dashboard
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = msg.body
+                dashboard_msg.set_metadata("performative", "plane_request_reply")
+                await self.send(dashboard_msg)
 
                 # Handle LANDING
                 if req_action == Action.LANDING:
@@ -41,8 +46,11 @@ class rcvStationInfoBehav(CyclicBehaviour):
                     # Update Plane State (notify plane)
 
             elif performative == "delay":
-                msg_data = jsonpickle.decode(msg.body)
-                print(msg_data)
+                # Notify Dashboard
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = msg.body
+                dashboard_msg.set_metadata("performative", "plane_request_reply")
+                await self.send(dashboard_msg)
 
                 # TODO - queue handling, notify plane, cancel if queue is full
             

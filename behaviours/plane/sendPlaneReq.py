@@ -30,7 +30,6 @@ class sendPlaneReqBehav(OneShotBehaviour):
             msg = await self.receive(timeout=60)
             if msg and msg.get_metadata("performative") == "confirm": 
                 pass
-                # TODO - takeoff again after a time
             else:
                 cancel_msg = Message(to=self.get("controlTower_jid"))
                 cancel_msg.body = str(self.agent.jid)

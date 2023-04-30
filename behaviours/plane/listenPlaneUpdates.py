@@ -13,6 +13,7 @@ class listenPlaneUpdatesBehav(CyclicBehaviour):
 
             if performative == "update":
                 pass
+                # After change from FLYING to LANDED, wait 30~ sec before sending new TAKEOFF request
 
         else:
             pass

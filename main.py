@@ -88,5 +88,6 @@ if __name__ == '__main__':
             for p in planes:
                 p.stop()
             break
-
+    
+    print('Agents stopped.')
     quit_spade()

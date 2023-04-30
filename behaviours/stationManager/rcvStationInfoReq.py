@@ -96,7 +96,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
         else:
             pass
 
-
+# Returns coordinates and distance of closest location in list, given a starting point
 def get_closest(start, locations):
     min_dist = 999999
     min_coords = None
@@ -109,5 +109,6 @@ def get_closest(start, locations):
 
     return (min_coords, math.ceil(min_dist))
 
+# Returns distance between two coordinate tuples
 def calc_dist(origin, dest):
     return math.sqrt( ((origin[0] - dest[0])**2) + ((origin[1] - dest[1])**2) )
