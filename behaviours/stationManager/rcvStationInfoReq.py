@@ -25,9 +25,9 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                 
                 # Check runways
                 available_runways = []
-                for r in self.runways:
+                for c, r in self.runways.items():
                     if (r.action_type == req_action or r.action_type == Action.MULTI) and not r.plane:
-                        available_runways.append(r)
+                        available_runways.append(c)
 
                 # If runway available
                 if len(available_runways) > 0 :
@@ -38,9 +38,9 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         available_stations = []
 
                         # Check stations
-                        for s in self.stations:
+                        for c, s in self.stations.items():
                             if s.type == plane_type and not s.plane:
-                                available_stations.append(s)
+                                available_stations.append(c)
 
                         # If station available
                         if len(available_stations) > 0 :
@@ -68,13 +68,13 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         closest_runway = None
                         curr_coords = None
                         
-                        for s in self.stations:
+                        for c, s in self.stations.items():
                             # Find current station
                             if s.plane == plane_id:
-                                curr_coords = s.coordinates
+                                curr_coords = c
 
                                 # Check distance to available runways
-                                closest_runway = get_closest(s, available_runways)
+                                closest_runway = get_closest(c, available_runways)
                                 break
 
                         # Notify Control Tower
@@ -96,19 +96,19 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
         else:
             pass
 
-# Returns coordinates and distance of closest location in list, given a starting point
+# Returns closest coordinates in list and its distance from the starting point
 def get_closest(start, locations):
     min_dist = 999999
     min_coords = None
     
     for loc in locations:
-        dist = calc_dist(start.coordinates, loc.coordinates)
+        dist = calc_dist(start, loc)
         if dist < min_dist:
             min_dist = dist
-            min_coords = loc.coordinates
+            min_coords = loc
 
     return (min_coords, math.ceil(min_dist))
 
-# Returns distance between two coordinate tuples
+# Returns distance between two coordinates
 def calc_dist(origin, dest):
     return math.sqrt( ((origin[0] - dest[0])**2) + ((origin[1] - dest[1])**2) )

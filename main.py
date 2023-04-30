@@ -7,7 +7,6 @@ from classes.station import Station
 from classes.enums import *
 from spade import quit_spade
 import time
-import random
 
 ## Server Info
 XMPP_SERVER = '@sara-pc'
@@ -30,19 +29,18 @@ if __name__ == '__main__':
     res_controlTower.result()
 
     # Setup Runways/Stations
-    runways = []
-    stations = []
-    
-    runways.append(Runway(50, 50, Action.LANDING, ''))
-    runways.append(Runway(0, 0, Action.TAKEOFF, ''))
+    runways = {}
+    runways[(50, 50)] = Runway(Action.LANDING, '')
+    runways[(0, 0)] = Runway(Action.TAKEOFF, '')
     stationManager.set("runways", runways)
 
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, ''))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, ''))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, ''))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, ''))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.PASSENGERS, 'plane3@sara-pc'))
-    stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, 'plane4@sara-pc'))
+    stations = {}
+    stations[(10, 10)] = Station(PlaneType.PASSENGERS, '')
+    stations[(20, 20)] = Station(PlaneType.PASSENGERS, '')
+    stations[(30, 30)] = Station(PlaneType.SHIPPING, '')
+    stations[(15, 15)] = Station(PlaneType.SHIPPING, '')
+    stations[(25, 25)] = Station(PlaneType.PASSENGERS, 'plane3@sara-pc')
+    stations[(35, 35)] = Station(PlaneType.SHIPPING, 'plane4@sara-pc')
     stationManager.set("stations", stations)
 
     # Start Station Manager

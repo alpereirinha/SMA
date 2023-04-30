@@ -1,14 +1,11 @@
 
 class Station:
-    def __init__(self, x, y, type, plane):
-        self.coordinates = (x, y)
+    def __init__(self, type, plane):
         self.type = type # SHIPPING / PASSENGERS
         self.plane = plane # '' / plane id
+    
+    def setType(self, type):
+        self.type = type
 
-    def __str__(self):
-        if self.plane:
-            plane_str = f'holding {self.plane}.'
-        else:
-            plane_str = 'free.'
-        
-        return f'Station at {self.coordinates}, Type {self.type.name}. Currently ' + plane_str
+    def setPlane(self, plane):
+        self.plane = plane
