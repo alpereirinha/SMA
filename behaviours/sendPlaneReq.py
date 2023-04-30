@@ -28,9 +28,9 @@ class sendPlaneReqBehav(OneShotBehaviour):
         # If flying, await confirmation. Timeout and try another airport if none after a minute.
         if self.state == PlaneState.FLYING:
             msg = await self.receive(timeout=60)
-            if msg: 
+            if msg and msg.get_metadata("performative") == "confirm": 
                 pass
-                # takeoff again after x time TODO
+                # TODO - takeoff again after a time
             else:
                 cancel_msg = Message(to=self.get("controlTower_jid"))
                 cancel_msg.set_metadata("performative", "cancel_request")

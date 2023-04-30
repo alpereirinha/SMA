@@ -51,7 +51,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
 
                             # Notify Control Tower
                             reply_msg = msg.make_reply()
-                            info = StationInfo(plane_id, req_action, 100, station_dist)
+                            info = StationInfo(plane_id, req_action, station_dist)
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "confirm")
                             await self.send(reply_msg)    
@@ -59,7 +59,8 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         # If no station available
                         else:
                             reply_msg = msg.make_reply()
-                            reply_msg.body = plane_id
+                            info = StationInfo(plane_id, req_action, 0)
+                            reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
 
@@ -75,15 +76,16 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
 
                         # Notify Control Tower
                         reply_msg = msg.make_reply()
-                        info = StationInfo(plane_id, req_action, runway_dist, 0)
+                        info = StationInfo(plane_id, req_action, runway_dist)
                         reply_msg.body = jsonpickle.encode(info)
                         reply_msg.set_metadata("performative", "confirm")
                         await self.send(reply_msg)          
 
-                # If no available runway
+                # If no runway available
                 else:
                     reply_msg = msg.make_reply()
-                    reply_msg.body = plane_id
+                    info = StationInfo(plane_id, req_action, 0)
+                    reply_msg.body = jsonpickle.encode(info)
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)
 

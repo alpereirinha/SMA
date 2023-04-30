@@ -1,12 +1,24 @@
+from classes.enums import Action
+
 class StationInfo:
-    def __init__(self, plane_id, request_action, runway_dist, station_dist):
+    def __init__(self, plane_id, request_action, dist):
         self.plane_id = plane_id
         self.request_action = request_action # LANDING / TAKEOFF
-        self.runway_distance = runway_dist
-        self.station_distance = station_dist # 0 if already at station
+        self.distance = dist # distance to station/runway
         
     def __str__(self):
-        return f'{self.request_action.name} Approved: {self.plane_id} to runway at distance {self.runway_distance} and to station at distance {self.station_distance}.'
+        if self.distance > 0:
+            if self.request_action == Action.LANDING:
+                location = 'station'
+            else:
+                location = 'runway'
+
+            str = f'{self.request_action.name} Approved: {self.plane_id} to {location} at distance {self.distance}.'
+        
+        else:
+            str = f'Delayed {self.request_action.name} of {self.plane_id}.'
+        
+        return str
     
     def getPlaneId(self):
         return self.plane_id
@@ -14,11 +26,8 @@ class StationInfo:
     def getRequestAction(self):
         return self.request_action
     
-    def getRunwayDistance(self):
-        return self.runway_distance
-    
-    def getStationDistance(self):
-        return self.station_distance
+    def getDistance(self):
+        return self.distance
     
     def setPlaneId(self, plane_id):
         self.plane_id = plane_id
@@ -26,10 +35,6 @@ class StationInfo:
     def setRequestAction(self, request_action):
         self.request_action = request_action
 
-    def setRunwayDistance(self, runway_distance):
-        self.runway_distance = runway_distance
-
-    def setStationDistance(self, station_distance):
-        self.station_distance = station_distance
-
+    def setDistance(self, distance):
+        self.distance = distance
     

@@ -9,7 +9,7 @@ from spade import quit_spade
 import time
 import random
 
-## Server Setup
+## Server Info
 XMPP_SERVER = '@sara-pc'
 PASSWORD = '1234'
 
@@ -23,6 +23,7 @@ if __name__ == '__main__':
     controlTower = ControlTowerAgent(controlTower_jid, PASSWORD)
     stationManager = StationManagerAgent(stationManager_jid, PASSWORD)
     
+    # Setup and start Control Tower
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
     res_controlTower = controlTower.start()
@@ -44,13 +45,15 @@ if __name__ == '__main__':
     stations.append(Station(random.randint(0, 50), random.randint(0, 50), PlaneType.SHIPPING, 'plane4@sara-pc'))
     stationManager.set("stations", stations)
 
+    # Start Station Manager
     res_stationManager = stationManager.start()
     res_stationManager.result()
 
+    # Start Dashboard
     res_dashboard = dashboard.start()
     res_dashboard.result()
 
-    # Setup starting planes
+    # Setup and start planes
     planes = []
     MAX = 5
     for i in range(1, MAX):
@@ -74,6 +77,7 @@ if __name__ == '__main__':
         plane.start()
         planes.append(plane)
 
+    # Run
     while controlTower.is_alive():
         try:
             time.sleep(1)
