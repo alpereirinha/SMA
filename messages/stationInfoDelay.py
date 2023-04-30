@@ -4,9 +4,6 @@ class StationInfoDelay:
         self.plane_id = plane_id
         self.request_action = request_action # LANDING / TAKEOFF
         self.issue = issue
-        
-    def __str__(self):
-        return f'Delayed {self.request_action.name} of {self.plane_id}. Issue: {self.issue}'
     
     def getPlaneId(self):
         return self.plane_id

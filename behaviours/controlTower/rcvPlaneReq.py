@@ -35,4 +35,4 @@ class rcvPlaneReqBehav(CyclicBehaviour):
         
         ## Timed out
         else:
-            print(f'Did not receive any requests after 30 sec.')
+            pass

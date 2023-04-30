@@ -1,6 +1,4 @@
 from spade.behaviour import CyclicBehaviour
-from spade.message import Message
-from classes.enums import *
 import jsonpickle
 
 class listenStationUpdatesBehav(CyclicBehaviour):
@@ -28,6 +26,3 @@ class listenStationUpdatesBehav(CyclicBehaviour):
                 plane_id = str(msg_data.getPlaneId())
 
                 self.runways[coords].setPlane(plane_id)
-
-        else:
-            pass

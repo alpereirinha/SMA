@@ -5,9 +5,6 @@ class PlaneRequest:
         self.plane_type = plane_type # SHIPPING / PASSENGERS
         self.request_action = request_action # LANDING / TAKEOFF
 
-    def __str__(self):
-        return f'Request for {self.request_action.name}: {self.plane_id}, Type {self.plane_type.name}.'
-
     def getPlaneId(self):
         return self.plane_id
     
