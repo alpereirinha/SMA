@@ -1,5 +1,5 @@
 
-class stationUpdate:
+class StationUpdate:
     def __init__(self, plane_id, coords):
         self.plane_id = plane_id
         self.coordinates = coords

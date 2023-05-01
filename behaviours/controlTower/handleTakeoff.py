@@ -1,6 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
-from messages.stationUpdate import stationUpdate
+from messages.stationUpdate import StationUpdate
 from classes.enums import Action
 import jsonpickle
 import asyncio

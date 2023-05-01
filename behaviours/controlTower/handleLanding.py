@@ -1,6 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
-from messages.stationUpdate import stationUpdate
+from messages.stationUpdate import StationUpdate
 import jsonpickle
 import asyncio
 
@@ -30,7 +30,7 @@ class handleLandingBehav(CyclicBehaviour):
 
                 # Occupy runway (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
-                info = stationUpdate(plane_id, msg_data.getRunwayCoords())
+                info = StationUpdate(plane_id, msg_data.getRunwayCoords())
                 station_msg.body = jsonpickle.encode(info)
                 station_msg.set_metadata("performative", "update_runway")
                 await self.send(station_msg)
@@ -46,14 +46,14 @@ class handleLandingBehav(CyclicBehaviour):
 
                 # Occupy station (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
-                info = stationUpdate(plane_id, msg_data.getStationCoords())
+                info = StationUpdate(plane_id, msg_data.getStationCoords())
                 station_msg.body = jsonpickle.encode(info)
                 station_msg.set_metadata("performative", "update_station")
                 await self.send(station_msg)
 
                 # Free runway (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
-                info = stationUpdate('', msg_data.getRunwayCoords())
+                info = StationUpdate('', msg_data.getRunwayCoords())
                 station_msg.body = jsonpickle.encode(info)
                 station_msg.set_metadata("performative", "update_runway")
                 await self.send(station_msg)
