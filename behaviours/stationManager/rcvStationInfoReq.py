@@ -1,6 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from messages.stationInfo import StationInfo
-from messages.stationInfoDelay import StationInfoDelay
+from messages.requestDelay import RequestDelay
 from classes.enums import *
 import math
 import jsonpickle
@@ -58,7 +58,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         # If no station available
                         else:
                             reply_msg = msg.make_reply()
-                            info = StationInfoDelay(plane_id, req_action, 'No station available.')
+                            info = RequestDelay(plane_id, req_action, 'No station available.')
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
@@ -76,7 +76,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                                 # Check distance to available runways
                                 closest_runway = get_closest(c, available_runways)
                                 break
-
+                        
                         # Notify Control Tower
                         reply_msg = msg.make_reply()
                         info = StationInfo(plane_id, closest_runway[0], curr_coords, closest_runway[1])
@@ -87,7 +87,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                 # If no runway available
                 else:
                     reply_msg = msg.make_reply()
-                    info = StationInfoDelay(plane_id, req_action, 'No runway available.')
+                    info = RequestDelay(plane_id, req_action, 'No runway available.')
                     reply_msg.body = jsonpickle.encode(info)
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)

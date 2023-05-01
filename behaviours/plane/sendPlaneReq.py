@@ -3,7 +3,6 @@ from spade.message import Message
 from messages.planeRequest import PlaneRequest
 from classes.enums import *
 import jsonpickle
-import time
 
 class sendPlaneReqBehav(OneShotBehaviour):
 
@@ -25,10 +24,10 @@ class sendPlaneReqBehav(OneShotBehaviour):
         msg.set_metadata("performative", "request")
         await self.send(msg)
 
-        # If flying, await confirmation. Timeout and try another airport if none after a minute.
+        # If flying, await some response. Timeout and try another airport if none after a minute.
         if self.state == PlaneState.FLYING:
             msg = await self.receive(timeout=60)
-            if msg and msg.get_metadata("performative") == "confirm": 
+            if msg: 
                 pass
             else:
                 cancel_msg = Message(to=self.get("controlTower_jid"))

@@ -1,5 +1,5 @@
 
-class StationInfoDelay:
+class RequestDelay:
     def __init__(self, plane_id, request_action, issue):
         self.plane_id = plane_id
         self.request_action = request_action # LANDING / TAKEOFF

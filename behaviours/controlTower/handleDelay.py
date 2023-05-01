@@ -12,6 +12,7 @@ class handleDelayBehav(CyclicBehaviour):
             
             ## Process Delay
             if performative == "delay":
+                msg_data = jsonpickle.decode(msg.body)
                 
                 # Notify Dashboard
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
@@ -19,4 +20,7 @@ class handleDelayBehav(CyclicBehaviour):
                 dashboard_msg.set_metadata("performative", performative)
                 await self.send(dashboard_msg)
 
-                # TODO - queue handling, notify plane, cancel if queue is full
+                # Notify Plane
+                plane_msg = Message(to=msg_data.getPlaneId())
+                plane_msg.set_metadata("performative", "delay")
+                await self.send(plane_msg)
