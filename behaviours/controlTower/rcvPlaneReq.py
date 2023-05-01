@@ -24,7 +24,7 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 station_msg.set_metadata("performative", "request")
                 await self.send(station_msg)
 
-            ## Cancel LANDING request
+            ## Received cancellation of LANDING request
             elif performative == "cancel_request":
                 
                 ## Notify Dashboard
@@ -32,7 +32,3 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 dashboard_msg.body = msg.body
                 dashboard_msg.set_metadata("performative", "cancel_plane_request")
                 await self.send(dashboard_msg)
-        
-        ## Timed out
-        else:
-            pass

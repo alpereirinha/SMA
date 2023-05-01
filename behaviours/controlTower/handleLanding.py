@@ -17,16 +17,16 @@ class handleLandingBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
-                # Notify Dashboard
-                dashboard_msg = Message(to=self.get("dashboard_jid"))
-                dashboard_msg.body = msg.body
-                dashboard_msg.set_metadata("performative", performative)
-                await self.send(dashboard_msg)
-
                 # Confirm landing (notify plane)
                 plane_msg = Message(to=msg_data.getPlaneId())
                 plane_msg.set_metadata("performative", "confirm")
                 await self.send(plane_msg)
+
+                # Confirm landing (notify dashboard)
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = msg.body
+                dashboard_msg.set_metadata("performative", "confirm")
+                await self.send(dashboard_msg)
 
                 # Occupy runway (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
@@ -35,14 +35,19 @@ class handleLandingBehav(CyclicBehaviour):
                 station_msg.set_metadata("performative", "update_runway")
                 await self.send(station_msg)
 
-                # Wait out landing - TODO dashboard
-                print(f'{plane_id} began landing...')
+                # Wait out landing (notify dashboard)
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = plane_id
+                dashboard_msg.set_metadata("performative", "start_action")
+                await self.send(dashboard_msg)
                 await asyncio.sleep(10)
-                print(f'{plane_id} finished landing. Moving to station at {msg_data.getStationCoords()}.')
 
-                # Wait out parking in station - TODO dashboard
+                # Wait out moving from runway to station (notify dashboard)
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = plane_id
+                dashboard_msg.set_metadata("performative", "next_action")
+                await self.send(dashboard_msg)
                 await asyncio.sleep(msg_data.getDistance())
-                print(f'{plane_id} finished parking.')
 
                 # Occupy station (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
@@ -62,3 +67,9 @@ class handleLandingBehav(CyclicBehaviour):
                 plane_msg = Message(to=msg_data.getPlaneId())
                 plane_msg.set_metadata("performative", "update")
                 await self.send(plane_msg)
+
+                # Landing concluded (notify dashboard)
+                dashboard_msg = Message(to=self.get("dashboard_jid"))
+                dashboard_msg.body = plane_id
+                dashboard_msg.set_metadata("performative", "end_action")
+                await self.send(dashboard_msg)

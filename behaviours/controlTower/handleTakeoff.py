@@ -18,10 +18,10 @@ class handleTakeoffBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
-                # Notify Dashboard
+                # Confirm takeoff (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
                 dashboard_msg.body = msg.body
-                dashboard_msg.set_metadata("performative", performative)
+                dashboard_msg.set_metadata("performative", "confirm")
                 await self.send(dashboard_msg)
                 
                 # Wait out move to runway
