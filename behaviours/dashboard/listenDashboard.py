@@ -16,7 +16,7 @@ class listenDashboardBehav(CyclicBehaviour):
             ## Control Tower received landing/takeoff request
             if performative == "plane_request":
                 msg_data = jsonpickle.decode(msg.body)
-                print(f'> Received request for {msg_data.getRequestAction().name}: {msg_data.getPlaneId()}, Type {msg_data.getPlaneType().name}.')
+                print(f'> {msg_data.getRequestAction().name} request received: {msg_data.getPlaneId()}, type {msg_data.getPlaneType().name}.')
 
             ## Plane cancelled landing request
             elif performative == "cancel_plane_request":
@@ -34,7 +34,7 @@ class listenDashboardBehav(CyclicBehaviour):
             ## Control Tower delayed landing
             elif performative == "delay":
                 msg_data = jsonpickle.decode(msg.body)
-                print(f'> Delayed {msg_data.getRequestAction().name} of {msg_data.getPlaneId()}. Issue: {msg_data.getIssue()}')
+                print(f'> {msg_data.getRequestAction().name} delayed for {msg_data.getPlaneId()}. Issue: {msg_data.getIssue()}')
 
             ## LANDING: Plane started landing / TAKEOFF: Plane is moving to runway
             elif performative == "start_action":
