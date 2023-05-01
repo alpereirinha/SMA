@@ -1,5 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
+import asyncio
 
 class rcvPlaneReqBehav(CyclicBehaviour):
     
@@ -11,6 +12,9 @@ class rcvPlaneReqBehav(CyclicBehaviour):
             
             ## Received valid landing/takeoff request
             if performative == "request":
+
+                ## Wait time between requests to avoid conflicts
+                await asyncio.sleep(0.5)
 
                 ## Notify Dashboard
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
