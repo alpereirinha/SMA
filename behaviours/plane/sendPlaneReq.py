@@ -1,6 +1,6 @@
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
-from messages.planeRequest import PlaneRequest
+from messages.planeRequestFull import PlaneRequestFull
 from classes.enums import *
 import jsonpickle
 
@@ -9,6 +9,9 @@ class sendPlaneReqBehav(OneShotBehaviour):
     async def on_start(self):
         self.type = self.get("type")
         self.state = self.get("state")
+        self.company = self.get("company")
+        self.origin = self.get("origin")
+        self.destination = self.get("destination")
     
     async def run(self):
         msg = Message(to=self.get("controlTower_jid"))
@@ -18,7 +21,7 @@ class sendPlaneReqBehav(OneShotBehaviour):
         else:
             req_action = Action.TAKEOFF
 
-        req = PlaneRequest(self.agent.jid, self.type, req_action)
+        req = PlaneRequestFull(self.agent.jid, self.type, req_action, self.company, self.origin, self.destination)
 
         msg.body = jsonpickle.encode(req)
         msg.set_metadata("performative", "request")

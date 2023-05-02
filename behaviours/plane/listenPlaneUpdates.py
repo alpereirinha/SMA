@@ -1,6 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
-from messages.planeRequest import PlaneRequest
+from messages.planeRequestFull import PlaneRequestFull
 from classes.enums import *
 import jsonpickle
 import asyncio
@@ -10,6 +10,9 @@ class listenPlaneUpdatesBehav(CyclicBehaviour):
     async def on_start(self):
         self.type = self.get("type")
         self.state = self.get("state")
+        self.company = self.get("company")
+        self.origin = self.get("origin")
+        self.destination = self.get("destination")
 
     async def run(self):
         msg = await self.receive(timeout=30)
@@ -26,7 +29,7 @@ class listenPlaneUpdatesBehav(CyclicBehaviour):
                     # Request TAKEOFF again 30 sec after landing
                     await asyncio.sleep(30)
                     new_msg = Message(to=self.get("controlTower_jid"))
-                    new_req = PlaneRequest(self.agent.jid, self.type, Action.TAKEOFF)
+                    new_req = PlaneRequestFull(self.agent.jid, self.type, Action.TAKEOFF, self.company, self.origin, self.destination)
                     new_msg.body = jsonpickle.encode(new_req)
                     new_msg.set_metadata("performative", "request")
                     await self.send(new_msg)

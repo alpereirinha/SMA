@@ -1,6 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 import asyncio
+import jsonpickle
 
 class rcvPlaneReqBehav(CyclicBehaviour):
     
@@ -22,9 +23,13 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 dashboard_msg.set_metadata("performative", "plane_request")
                 await self.send(dashboard_msg)
                 
+                ## Convert PlaneRequestFull into PlaneRequest (ignore company, origin and destination)
+                msg_data = jsonpickle.decode(msg.body)
+                req = msg_data.toPlaneRequest()
+
                 ## Request info from Station Manager
                 station_msg = Message(to=self.get("stationManager_jid"))
-                station_msg.body = msg.body
+                station_msg.body = jsonpickle.encode(req)
                 station_msg.set_metadata("performative", "request")
                 await self.send(station_msg)
 
