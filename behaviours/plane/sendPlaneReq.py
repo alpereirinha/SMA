@@ -9,6 +9,7 @@ class sendPlaneReqBehav(OneShotBehaviour):
     async def on_start(self):
         self.type = self.get("type")
         self.state = self.get("state")
+        self.coordinates = self.get("coordinates")
         self.company = self.get("company")
         self.origin = self.get("origin")
         self.destination = self.get("destination")
@@ -21,7 +22,7 @@ class sendPlaneReqBehav(OneShotBehaviour):
         else:
             req_action = Action.TAKEOFF
 
-        req = PlaneRequestFull(self.agent.jid, self.type, req_action, self.company, self.origin, self.destination)
+        req = PlaneRequestFull(self.agent.jid, self.type, self.coordinates, req_action, self.company, self.origin, self.destination)
 
         msg.body = jsonpickle.encode(req)
         msg.set_metadata("performative", "request")
@@ -30,9 +31,7 @@ class sendPlaneReqBehav(OneShotBehaviour):
         # If flying, await some response. Timeout and try another airport if none after a minute.
         if self.state == PlaneState.FLYING:
             msg = await self.receive(timeout=60)
-            if msg: 
-                pass
-            else:
+            if not msg:
                 cancel_msg = Message(to=self.get("controlTower_jid"))
                 cancel_msg.body = str(self.agent.jid)
                 cancel_msg.set_metadata("performative", "cancel_request")

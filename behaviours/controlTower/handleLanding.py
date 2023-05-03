@@ -54,7 +54,7 @@ class handleLandingBehav(CyclicBehaviour):
                 dashboard_msg.body = plane_id
                 dashboard_msg.set_metadata("performative", "next_action")
                 await self.send(dashboard_msg)
-                await asyncio.sleep(msg_data.getDistance())
+                await asyncio.sleep(msg_data.getDistance()/2)
 
                 # Free runway (notify station manager)
                 station_msg = Message(to=self.get("stationManager_jid"))
@@ -65,6 +65,7 @@ class handleLandingBehav(CyclicBehaviour):
 
                 # Update Plane State (notify plane)
                 plane_msg = Message(to=msg_data.getPlaneId())
+                plane_msg.body = str(msg_data.getStationCoords())
                 plane_msg.set_metadata("performative", "update")
                 await self.send(plane_msg)
 

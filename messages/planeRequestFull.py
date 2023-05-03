@@ -1,14 +1,14 @@
 from messages.planeRequest import PlaneRequest
 
 class PlaneRequestFull(PlaneRequest):
-    def __init__(self, plane_id, plane_type, request_action, company, origin, destination):
-        super().__init__(plane_id, plane_type, request_action)
+    def __init__(self, plane_id, plane_type, plane_coords, request_action, company, origin, destination):
+        super().__init__(plane_id, plane_type, plane_coords, request_action)
         self.company = company
         self.origin = origin
         self.destination = destination
 
     def toPlaneRequest(self):
-        return PlaneRequest(self.plane_id, self.plane_type, self.request_action)
+        return PlaneRequest(self.plane_id, self.plane_type, self.plane_coords, self.request_action)
     
     def getCompany(self):
         return self.company

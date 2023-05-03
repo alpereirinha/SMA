@@ -18,6 +18,9 @@ MAX_PLANES = 4
 companies = ['TAP', 'RyanAir', 'Delta', 'AirFrance']
 locations = ['Lisbon', 'Madrid', 'Paris', 'London', 'Dublin', 'Berlin']
 
+## Station Options
+MAX_STATIONS = 6
+
 if __name__ == '__main__':
 
     dashboard_jid = "dashboard" + XMPP_SERVER
@@ -28,29 +31,40 @@ if __name__ == '__main__':
     controlTower = ControlTowerAgent(controlTower_jid, PASSWORD)
     stationManager = StationManagerAgent(stationManager_jid, PASSWORD)
     
-    # Setup and start Control Tower
+    # Setup and Start Control Tower
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
-    # Setup Runways
+    # Prepare Runways
     runways = {}
     runways[(50, 50)] = Runway(Action.LANDING, '')
     runways[(0, 0)] = Runway(Action.TAKEOFF, '')
-    stationManager.set("runways", runways)
 
-    # Setup Stations
+    # Coordinates options for stations
+    coords_x = random.sample(range(10, 40), MAX_STATIONS)
+    coords_y = random.sample(range(10, 40), MAX_STATIONS)
+    coords = list(zip(coords_x, coords_y))
+
+    # Prepare Stations
     stations = {}
-    stations[(10, 10)] = Station(PlaneType.PASSENGERS, '')
-    stations[(20, 20)] = Station(PlaneType.PASSENGERS, '')
-    stations[(30, 30)] = Station(PlaneType.SHIPPING, '')
-    stations[(15, 15)] = Station(PlaneType.SHIPPING, '')
-    stations[(25, 25)] = Station(PlaneType.PASSENGERS, 'plane' + str(MAX_PLANES-1) + XMPP_SERVER)
-    stations[(35, 35)] = Station(PlaneType.SHIPPING, 'plane' + str(MAX_PLANES) + XMPP_SERVER)
-    stationManager.set("stations", stations)
+    for i in range(MAX_STATIONS):
+        if i%2:
+            planetype = PlaneType.SHIPPING
+        else:
+            planetype = PlaneType.PASSENGERS
 
-    # Start Station Manager
+        if i < MAX_PLANES/2 or i >= MAX_PLANES:
+            planelanded = ''
+        else:
+            planelanded = "plane" + str(i+1) + XMPP_SERVER
+
+        stations[coords[i]] = Station(planetype, planelanded)
+
+    # Setup and Start Station Manager
+    stationManager.set("runways", runways)
+    stationManager.set("stations", stations)
     res_stationManager = stationManager.start()
     res_stationManager.result()
 
@@ -58,10 +72,10 @@ if __name__ == '__main__':
     res_dashboard = dashboard.start()
     res_dashboard.result()
 
-    # Setup and start planes
+    # Setup and Start planes
     planes = []
-    for i in range(1, MAX_PLANES+1):
-        plane_jid = "plane" + str(i) + XMPP_SERVER
+    for i in range(MAX_PLANES):
+        plane_jid = "plane" + str(i+1) + XMPP_SERVER
         plane = PlaneAgent(plane_jid, PASSWORD)
 
         locs = random.sample(locations, 2)
@@ -75,10 +89,12 @@ if __name__ == '__main__':
         else:
             plane.set('type', PlaneType.PASSENGERS)
 
-        if i <= (MAX_PLANES+1)/2:
+        if i < MAX_PLANES/2:
             plane.set('state', PlaneState.FLYING)
+            plane.set('coordinates', (random.randint(60,100), random.randint(60,100)) )
         else:
             plane.set('state', PlaneState.LANDED)
+            plane.set('coordinates', coords[i])
 
         plane.start()
         planes.append(plane)

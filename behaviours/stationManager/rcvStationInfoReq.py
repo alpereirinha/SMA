@@ -32,12 +32,16 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                 # If runway available
                 if len(available_runways) > 0 :
 
+                    # Find closest runway to current coordinates
+                    curr_coords = msg_data.getPlaneCoords()
+                    closest_runway = get_closest(curr_coords, available_runways)
+
                     # If LANDING check for closest compatible station
                     if req_action == Action.LANDING:
                         plane_type = msg_data.getPlaneType()
                         available_stations = []
 
-                        # Check stations
+                        # Check for compatible free stations
                         for c, s in self.stations.items():
                             if s.type == plane_type and not s.plane:
                                 available_stations.append(c)
@@ -45,12 +49,12 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         # If station available
                         if len(available_stations) > 0 :
                             
-                            # Pick first available runway, check distance to available stations
-                            closest_station = get_closest(available_runways[0], available_stations)
+                            # Find closest station to runway
+                            closest_station = get_closest(closest_runway[0], available_stations)
 
                             # Notify Control Tower
                             reply_msg = msg.make_reply()
-                            info = StationInfo(plane_id, req_action, available_runways[0], closest_station[0], closest_station[1])
+                            info = StationInfo(plane_id, req_action, closest_runway[0], closest_station[0], closest_station[1])
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "confirm_landing")
                             await self.send(reply_msg)    
@@ -63,20 +67,8 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
 
-                    # If TAKEOFF check for closest runway
+                    # If TAKEOFF just use closest runway
                     else:
-                        closest_runway = None
-                        curr_coords = None
-                        
-                        for c, s in self.stations.items():
-                            # Find current station
-                            if s.plane == plane_id:
-                                curr_coords = c
-
-                                # Check distance to available runways
-                                closest_runway = get_closest(c, available_runways)
-                                break
-                        
                         # Notify Control Tower
                         reply_msg = msg.make_reply()
                         info = StationInfo(plane_id, req_action, closest_runway[0], curr_coords, closest_runway[1])
@@ -92,7 +84,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)
 
-# Returns closest coordinates in list and its distance from the starting point
+# Returns closest coordinates from list and its distance from the starting point
 def get_closest(start, locations):
     min_dist = 999999
     min_coords = None
