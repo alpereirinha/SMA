@@ -62,7 +62,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         # If no station available
                         else:
                             reply_msg = msg.make_reply()
-                            info = RequestDelay(plane_id, req_action, 'No station available.')
+                            info = RequestDelay(plane_id, req_action, 'No Station Available')
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
@@ -79,7 +79,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                 # If no runway available
                 else:
                     reply_msg = msg.make_reply()
-                    info = RequestDelay(plane_id, req_action, 'No runway available.')
+                    info = RequestDelay(plane_id, req_action, 'No Runway Available')
                     reply_msg.body = jsonpickle.encode(info)
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)

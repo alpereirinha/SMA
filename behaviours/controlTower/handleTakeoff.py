@@ -48,8 +48,8 @@ class handleTakeoffBehav(CyclicBehaviour):
                 station_msg.set_metadata("performative", "update_station")
                 await self.send(station_msg)
 
-                # Update free stations (one more space)
-                # TODO
+                # Update max_queue (one more space)
+                self.set("max_queue", self.get("max_queue") + 1)
 
                 # Wait out takeoff (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))

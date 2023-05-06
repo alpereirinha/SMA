@@ -36,5 +36,5 @@ class listenPlaneUpdatesBehav(CyclicBehaviour):
                     new_msg.set_metadata("performative", "request")
                     await self.send(new_msg)
 
-            elif performative == "refused":
+            elif performative == "refuse":
                 await self.agent.stop() # Leave the system (try another airport)

@@ -8,6 +8,7 @@ from classes.enums import *
 from spade import quit_spade
 import time
 import random
+import math
 
 ## Server Info
 XMPP_SERVER = '@sara-pc'
@@ -35,7 +36,7 @@ if __name__ == '__main__':
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
     controlTower.set('queue', [])
-    controlTower.set('free_stations', MAX_STATIONS - MAX_PLANES/2)
+    controlTower.set('max_queue', MAX_STATIONS - math.ceil(MAX_PLANES/2))
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
