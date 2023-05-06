@@ -21,20 +21,20 @@ locations = ['Lisbon', 'Madrid', 'Paris', 'London', 'Dublin', 'Berlin']
 MAX_STATIONS = 6
 
 ## Runway Default Options
-MULTI_RUNWAYS = False
+MULTI_RUNWAY = False
 
 if __name__ == '__main__':
 
     # Use command line options to set number of planes and stations
     try:
-        args, vals = getopt.getopt(sys.argv[1:], "p:s:m", ["planes", "stations", "multirunways"])
+        args, vals = getopt.getopt(sys.argv[1:], "p:s:m", ["planes", "stations", "multirunway"])
         for a, v in args:
             if a in ("-p", "--planes"):
                 MAX_PLANES = int(v)
             elif a in ("-s", "--stations"):
                 MAX_STATIONS = int(v)
-            elif a in ("-m", "--multirunways"):
-                MULTI_RUNWAYS = True
+            elif a in ("-m", "--multirunway"):
+                MULTI_RUNWAY = True
     except getopt.error as err:
         print(str(err))
 
@@ -50,14 +50,15 @@ if __name__ == '__main__':
     # Setup and Start Control Tower
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
-    controlTower.set('queue', [])
-    controlTower.set('max_queue', MAX_STATIONS - math.ceil(MAX_PLANES/2))
+    controlTower.set('max_landing_queue', MAX_STATIONS - math.ceil(MAX_PLANES/2))
+    controlTower.set('landing_queue', [])
+    controlTower.set('takeoff_queue', [])
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
     # Prepare Runways
     runways = {}
-    if MULTI_RUNWAYS:
+    if MULTI_RUNWAY:
         runways[(0, 0)] = Runway(Action.MULTI, '')
     else:
         runways[(50, 50)] = Runway(Action.LANDING, '')

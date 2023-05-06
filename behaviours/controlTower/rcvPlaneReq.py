@@ -22,32 +22,41 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 dashboard_msg.set_metadata("performative", "request")
                 await self.send(dashboard_msg)
 
-                # If LANDING request, confirm it was received
-                if msg_data.getRequestAction() == Action.LANDING:
-                    plane_msg = Message(to=plane_id)
-                    plane_msg.set_metadata("performative", "ok")
-                    await self.send(plane_msg)
-
                 # Convert PlaneRequestFull into PlaneRequest (ignore company, origin and destination)
                 req = msg_data.toPlaneRequest()
 
-                # If LANDING request, and queue is full, refuse landing
-                if (msg_data.getRequestAction() == Action.LANDING) and (len(self.get("queue")) >= self.get("max_queue")):
-                    
-                    # Refuse Plane LANDING
-                    plane_msg = Message(to=plane_id)
-                    plane_msg.set_metadata("performative", "refuse")
-                    await self.send(plane_msg)
+                # If LANDING request
+                if msg_data.getRequestAction() == Action.LANDING:
 
-                    # Notify Dashboard
-                    dashboard_msg = Message(to=self.get("dashboard_jid"))
-                    dashboard_msg.body = plane_id
-                    dashboard_msg.set_metadata("performative", "refuse")
-                    await self.send(dashboard_msg)
-                
-                # Else add request to queue
+                    # If queue not full
+                    if len(self.get("landing_queue")) < self.get("max_landing_queue"):
+                        
+                        # Confirm LANDING with Plane
+                        plane_msg = Message(to=plane_id)
+                        plane_msg.set_metadata("performative", "ok")
+                        await self.send(plane_msg)
+
+                        # Add request to queue
+                        self.get("landing_queue").append(req)
+                    
+                    # If queue full
+                    else:
+
+                        # Refuse Plane LANDING
+                        plane_msg = Message(to=plane_id)
+                        plane_msg.set_metadata("performative", "refuse")
+                        await self.send(plane_msg)
+
+                        # Notify Dashboard
+                        dashboard_msg = Message(to=self.get("dashboard_jid"))
+                        dashboard_msg.body = plane_id
+                        dashboard_msg.set_metadata("performative", "refuse")
+                        await self.send(dashboard_msg)
+
+                # If TAKEOFF request
                 else:
-                    self.get("queue").append(req)
+                    # Add request to queue
+                    self.get("takeoff_queue").append(req)
 
             # Received cancellation of LANDING request
             elif performative == "cancel_request":
@@ -59,5 +68,5 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 await self.send(dashboard_msg)
 
                 # Remove request from queue
-                self.set("queue", list(filter(lambda req: str(req.getPlaneId()) != msg.body, self.get("queue"))))
+                self.set("landing_queue", list(filter(lambda req: str(req.getPlaneId()) != msg.body, self.get("landing_queue"))))
                 

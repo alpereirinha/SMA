@@ -18,7 +18,7 @@ class handleLandingBehav(CyclicBehaviour):
                 plane_id = str(msg_data.getPlaneId())
 
                 # Remove request from queue
-                self.set("queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("queue"))))
+                self.set("landing_queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("landing_queue"))))
 
                 # Confirm landing (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
@@ -40,8 +40,8 @@ class handleLandingBehav(CyclicBehaviour):
                 station_msg.set_metadata("performative", "update_station")
                 await self.send(station_msg)
 
-                # Update max_queue (one less space)
-                self.set("max_queue", self.get("max_queue") - 1)
+                # Update max_landing_queue (one less free space)
+                self.set("max_landing_queue", self.get("max_landing_queue") - 1)
 
                 # Wait out landing (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
