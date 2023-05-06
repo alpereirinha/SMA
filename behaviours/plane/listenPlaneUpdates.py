@@ -1,7 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 from messages.planeRequestFull import PlaneRequestFull
-from classes.enums import *
+from classes.enums import Action, PlaneState
 import jsonpickle
 import asyncio
 
@@ -35,3 +35,6 @@ class listenPlaneUpdatesBehav(CyclicBehaviour):
                     new_msg.body = jsonpickle.encode(new_req)
                     new_msg.set_metadata("performative", "request")
                     await self.send(new_msg)
+
+            elif performative == "refused":
+                await self.agent.stop() # Leave the system (try another airport)

@@ -17,10 +17,8 @@ class handleLandingBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
-                # Confirm landing (notify plane)
-                plane_msg = Message(to=msg_data.getPlaneId())
-                plane_msg.set_metadata("performative", "confirm")
-                await self.send(plane_msg)
+                # Remove request from queue
+                self.set("queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("queue"))))
 
                 # Confirm landing (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
@@ -41,6 +39,9 @@ class handleLandingBehav(CyclicBehaviour):
                 station_msg.body = jsonpickle.encode(info)
                 station_msg.set_metadata("performative", "update_station")
                 await self.send(station_msg)
+
+                # Update free stations (one less space)
+                # TODO
 
                 # Wait out landing (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))

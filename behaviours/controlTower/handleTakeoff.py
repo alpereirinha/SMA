@@ -18,6 +18,9 @@ class handleTakeoffBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
+                # Remove request from queue
+                self.set("queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("queue"))))
+
                 # Confirm takeoff (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
                 dashboard_msg.body = msg.body
@@ -44,6 +47,9 @@ class handleTakeoffBehav(CyclicBehaviour):
                 station_msg.body = jsonpickle.encode(info)
                 station_msg.set_metadata("performative", "update_station")
                 await self.send(station_msg)
+
+                # Update free stations (one more space)
+                # TODO
 
                 # Wait out takeoff (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))

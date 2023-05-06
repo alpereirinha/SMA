@@ -34,6 +34,8 @@ if __name__ == '__main__':
     # Setup and Start Control Tower
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
+    controlTower.set('queue', [])
+    controlTower.set('free_stations', MAX_STATIONS - MAX_PLANES/2)
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
