@@ -27,9 +27,16 @@ if __name__ == '__main__':
 
     # Use command line options to set number of planes and stations
     try:
-        args, vals = getopt.getopt(sys.argv[1:], "p:s:m", ["planes", "stations", "multirunway"])
+        args, vals = getopt.getopt(sys.argv[1:], "hp:s:m", ["help", "planes", "stations", "multirunway"])
         for a, v in args:
-            if a in ("-p", "--planes"):
+            if a in ("-h", "--help"):
+                print('\n*** Options ***\n')
+                print('-h, --help : Show options')
+                print('-p, --planes [number of planes] : Set number of initial planes')
+                print('-s, --stations [number of stations] : Set number of stations')
+                print('-m, --multirunway : Use a single runway for both landing and takeoff requests\n')
+                exit()
+            elif a in ("-p", "--planes"):
                 MAX_PLANES = int(v)
             elif a in ("-s", "--stations"):
                 MAX_STATIONS = int(v)

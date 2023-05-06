@@ -18,7 +18,7 @@ class handleLandingBehav(CyclicBehaviour):
                 plane_id = str(msg_data.getPlaneId())
 
                 # Remove request from queue
-                self.set("landing_queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("landing_queue"))))
+                self.get("landing_queue").pop(0)
 
                 # Confirm landing (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))

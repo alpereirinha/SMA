@@ -19,7 +19,7 @@ class handleTakeoffBehav(CyclicBehaviour):
                 plane_id = str(msg_data.getPlaneId())
 
                 # Remove request from queue
-                self.set("takeoff_queue", list(filter(lambda req: str(req.getPlaneId()) != plane_id, self.get("takeoff_queue"))))
+                self.get("takeoff_queue").pop(0)
 
                 # Confirm takeoff (notify dashboard)
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
