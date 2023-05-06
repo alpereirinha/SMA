@@ -7,7 +7,5 @@ class PlaneAgent(Agent):
     async def setup(self):
         behav_sendPlaneReq = sendPlaneReqBehav()
         behav_listenPlaneUpdates = listenPlaneUpdatesBehav()
-
         self.add_behaviour(behav_sendPlaneReq)
         self.add_behaviour(behav_listenPlaneUpdates)
-

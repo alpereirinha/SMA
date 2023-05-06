@@ -58,8 +58,7 @@ if __name__ == '__main__':
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
     controlTower.set('max_landing_queue', MAX_STATIONS - math.ceil(MAX_PLANES/2))
-    controlTower.set('landing_queue', [])
-    controlTower.set('takeoff_queue', [])
+    controlTower.set('multi_mode', MULTI_RUNWAY)
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
@@ -85,10 +84,10 @@ if __name__ == '__main__':
             planetype = PlaneType.PASSENGERS
 
         if i < MAX_PLANES/2 or i >= MAX_PLANES:
-            planelanded = ''
-        else:
             planelanded = "plane" + str(i+1) + XMPP_SERVER
-
+        else:
+            planelanded = ''
+        
         stations[coords[i]] = Station(planetype, planelanded)
 
     # Setup and Start Station Manager
@@ -119,11 +118,11 @@ if __name__ == '__main__':
             plane.set('type', PlaneType.PASSENGERS)
 
         if i < MAX_PLANES/2:
-            plane.set('state', PlaneState.FLYING)
-            plane.set('coordinates', (random.randint(60,100), random.randint(60,100)) )
-        else:
             plane.set('state', PlaneState.LANDED)
             plane.set('coordinates', coords[i])
+        else:
+            plane.set('state', PlaneState.FLYING)
+            plane.set('coordinates', (random.randint(60,100), random.randint(60,100)) )
 
         plane.start()
         planes.append(plane)

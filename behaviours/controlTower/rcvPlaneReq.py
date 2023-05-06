@@ -4,7 +4,10 @@ from classes.enums import Action
 import jsonpickle
 
 class rcvPlaneReqBehav(CyclicBehaviour):
-    
+
+    async def on_start(self):
+        self.multi = self.get("multi_mode")
+
     async def run(self):
         msg = await self.receive(timeout=30)
 
@@ -28,8 +31,13 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 # If LANDING request
                 if msg_data.getRequestAction() == Action.LANDING:
 
+                    # Get number of landing planes on queue
+                    n_landing = len(self.agent.landing_queue)
+                    if self.multi:
+                        n_landing = len(list(filter(lambda req: req.getRequestAction() == Action.LANDING, self.agent.multi_queue)))
+
                     # If queue not full
-                    if len(self.get("landing_queue")) < self.get("max_landing_queue"):
+                    if n_landing < self.get("max_landing_queue"):
                         
                         # Confirm LANDING with Plane
                         plane_msg = Message(to=plane_id)
@@ -37,11 +45,13 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                         await self.send(plane_msg)
 
                         # Add request to queue
-                        self.get("landing_queue").append(req)
+                        if self.multi:
+                            self.agent.multi_queue.append(req)
+                        else:
+                            self.agent.landing_queue.append(req)
                     
                     # If queue full
                     else:
-
                         # Refuse Plane LANDING
                         plane_msg = Message(to=plane_id)
                         plane_msg.set_metadata("performative", "refuse")
@@ -56,7 +66,10 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 # If TAKEOFF request
                 else:
                     # Add request to queue
-                    self.get("takeoff_queue").append(req)
+                    if self.multi:
+                        self.agent.multi_queue.append(req)
+                    else:
+                        self.agent.takeoff_queue.append(req)
 
             # Received cancellation of LANDING request
             elif performative == "cancel_request":
@@ -68,5 +81,8 @@ class rcvPlaneReqBehav(CyclicBehaviour):
                 await self.send(dashboard_msg)
 
                 # Remove request from queue
-                self.set("landing_queue", list(filter(lambda req: str(req.getPlaneId()) != msg.body, self.get("landing_queue"))))
+                if self.multi:
+                    self.agent.multi_queue = [req for req in self.agent.multi_queue if str(req.getPlaneId()) != msg.body]
+                else:
+                    self.agent.landing_queue = [req for req in self.agent.landing_queue if str(req.getPlaneId()) != msg.body]
                 
