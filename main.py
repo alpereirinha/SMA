@@ -6,24 +6,39 @@ from classes.runway import Runway
 from classes.station import Station
 from classes.enums import *
 from spade import quit_spade
-import time
-import random
-import math
+import sys, getopt, time, random, math
 
 ## Server Info
 XMPP_SERVER = '@sara-pc'
 PASSWORD = '1234'
 
-## Plane Options
+## Plane Default Options
 MAX_PLANES = 4
 companies = ['TAP', 'RyanAir', 'Delta', 'AirFrance']
 locations = ['Lisbon', 'Madrid', 'Paris', 'London', 'Dublin', 'Berlin']
 
-## Station Options
+## Station Default Options
 MAX_STATIONS = 6
+
+## Runway Default Options
+MULTI_RUNWAYS = False
 
 if __name__ == '__main__':
 
+    # Use command line options to set number of planes and stations
+    try:
+        args, vals = getopt.getopt(sys.argv[1:], "p:s:m", ["planes", "stations", "multirunways"])
+        for a, v in args:
+            if a in ("-p", "--planes"):
+                MAX_PLANES = int(v)
+            elif a in ("-s", "--stations"):
+                MAX_STATIONS = int(v)
+            elif a in ("-m", "--multirunways"):
+                MULTI_RUNWAYS = True
+    except getopt.error as err:
+        print(str(err))
+
+    # Set JIDs and Agents
     dashboard_jid = "dashboard" + XMPP_SERVER
     controlTower_jid = "controltower" + XMPP_SERVER
     stationManager_jid = "stationmanager" + XMPP_SERVER
@@ -42,8 +57,11 @@ if __name__ == '__main__':
 
     # Prepare Runways
     runways = {}
-    runways[(50, 50)] = Runway(Action.LANDING, '')
-    runways[(0, 0)] = Runway(Action.TAKEOFF, '')
+    if MULTI_RUNWAYS:
+        runways[(0, 0)] = Runway(Action.MULTI, '')
+    else:
+        runways[(50, 50)] = Runway(Action.LANDING, '')
+        runways[(0, 0)] = Runway(Action.TAKEOFF, '')
 
     # Coordinates options for stations
     coords_x = random.sample(range(10, 40), MAX_STATIONS)
