@@ -21,25 +21,29 @@ locations = ['Lisbon', 'Madrid', 'Paris', 'London', 'Dublin', 'Berlin']
 MAX_STATIONS = 6
 
 ## Runway Default Options
+MAX_RUNWAYS = 2
 MULTI_RUNWAY = False
 
 if __name__ == '__main__':
 
     # Use command line options to set number of planes and stations
     try:
-        args, vals = getopt.getopt(sys.argv[1:], "hp:s:m", ["help", "planes", "stations", "multirunway"])
+        args, vals = getopt.getopt(sys.argv[1:], "hp:s:r:m", ["help", "planes", "stations", "runways", "multirunway"])
         for a, v in args:
             if a in ("-h", "--help"):
                 print('\n*** Options ***\n')
                 print('-h, --help : Show options')
-                print('-p, --planes [number of planes] : Set number of initial planes')
-                print('-s, --stations [number of stations] : Set number of stations')
-                print('-m, --multirunway : Use a single runway for both landing and takeoff requests\n')
+                print('-p, --planes [number of planes] : Set number of initial planes. They will be split between landing/taking off, and passengers/shipping.')
+                print('-s, --stations [number of stations] : Set number of stations. They will be split between passengers/shipping, and automatically filled with the already landed planes.')
+                print('-r, --runways [number of runwayss] : Set number of runways. They will be split between for landing/takeoff.')
+                print('-m, --multirunway : All runways can handle both landings and takeoffs.\n')
                 exit()
             elif a in ("-p", "--planes"):
                 MAX_PLANES = int(v)
             elif a in ("-s", "--stations"):
                 MAX_STATIONS = int(v)
+            elif a in ("-r", "--runways"):
+                MAX_RUNWAYS = int(v)
             elif a in ("-m", "--multirunway"):
                 MULTI_RUNWAY = True
     except getopt.error as err:
@@ -62,13 +66,35 @@ if __name__ == '__main__':
     res_controlTower = controlTower.start()
     res_controlTower.result()
 
-    # Prepare Runways
+    # Prepare Runways / Setup and Start Runways
+    runway_agents = []
     runways = {}
-    if MULTI_RUNWAY:
-        runways[(0, 0)] = Runway(Action.MULTI, '')
-    else:
-        runways[(50, 50)] = Runway(Action.LANDING, '')
-        runways[(0, 0)] = Runway(Action.TAKEOFF, '')
+    for i in range(MAX_RUNWAYS):
+        rw_jid = "runwayhandler" + str(i+1) + XMPP_SERVER
+        rw = PlaneAgent(rw_jid, PASSWORD)
+
+        if MULTI_RUNWAY:
+            rw.set("landing_mode", True)
+            rw.set("takeoff_mode", True)
+            runways[(0, 10*i)] = Runway(Action.MULTI, '')
+        else:
+            if i < MAX_RUNWAYS/2:
+                rw.set("landing_mode", True)
+                rw.set("takeoff_mode", False)
+                runways[(0, 10*i)] = Runway(Action.LANDING, '')
+            else:
+                rw.set("landing_mode", False)
+                rw.set("takeoff_mode", True)
+                runways[(50, 10*i)] = Runway(Action.TAKEOFF, '')
+
+        rw.start()
+        runway_agents.append(rw)
+            
+    #if MULTI_RUNWAY:
+    #    runways[(0, 0)] = Runway(Action.MULTI, '')
+    #else:
+    #    runways[(0, 0)] = Runway(Action.LANDING, '')
+    #    runways[(50, 50)] = Runway(Action.TAKEOFF, '')
 
     # Coordinates options for stations
     coords_x = random.sample(range(10, 40), MAX_STATIONS)
@@ -100,8 +126,8 @@ if __name__ == '__main__':
     res_dashboard = dashboard.start()
     res_dashboard.result()
 
-    # Setup and Start planes
-    planes = []
+    # Setup and Start Planes
+    plane_agents = []
     for i in range(MAX_PLANES):
         plane_jid = "plane" + str(i+1) + XMPP_SERVER
         plane = PlaneAgent(plane_jid, PASSWORD)
@@ -125,7 +151,7 @@ if __name__ == '__main__':
             plane.set('coordinates', (random.randint(60,100), random.randint(60,100)) )
 
         plane.start()
-        planes.append(plane)
+        plane_agents.append(plane)
 
     # Run
     while controlTower.is_alive():
@@ -135,7 +161,9 @@ if __name__ == '__main__':
             controlTower.stop()
             stationManager.stop()
             dashboard.stop()
-            for p in planes:
+            for r in runway_agents:
+                r.stop()
+            for p in plane_agents:
                 p.stop()
             break
     
