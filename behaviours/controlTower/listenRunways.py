@@ -2,7 +2,7 @@ from spade.behaviour import CyclicBehaviour
 from spade.message import Message
 import jsonpickle
 
-class listenRunwayInfoBehav(CyclicBehaviour):
+class listenRunwaysBehav(CyclicBehaviour):
   
     async def run(self):
         msg = await self.receive(timeout=30)

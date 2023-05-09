@@ -37,7 +37,7 @@ class listenDashboardBehav(CyclicBehaviour):
                 plane_id = msg.body.split("@", 1)[0]
                 print(f'{timestamp()} > LANDING *refused* for {plane_id}. Plane will head to another airport. (Queue Full)')
 
-            ## Control Tower delayed landing
+            ## Control Tower delayed landing/takeoff
             #elif performative == "delay":
             #    msg_data = jsonpickle.decode(msg.body)
             #    plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
@@ -51,11 +51,11 @@ class listenDashboardBehav(CyclicBehaviour):
 
                 # Plane started landing
                 if data.getRequestAction() == Action.LANDING:
-                    print(f'{timestamp()} > {plane_id} started landing on the {runway_id} at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} started landing on the {runway_id}...')
 
                 # Plane is moving to runway
                 else:
-                    print(f'{timestamp()} > {plane_id} is moving from the station at {data.getStationCoords()} to the {runway_id} at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} is moving from its station to the {runway_id}... (Estimated Time: {data.getDistance()/2} secs)')
 
             ## LANDING: Plane is moving to station / TAKEOFF: Plane is taking off
             elif performative == "next_action":                
@@ -65,11 +65,11 @@ class listenDashboardBehav(CyclicBehaviour):
 
                 # Plane is moving to station
                 if data.getRequestAction() == Action.LANDING:
-                    print(f'{timestamp()} > {plane_id} is moving from the {runway_id} at {data.getRunwayCoords()} to the station at {data.getStationCoords()}...')
+                    print(f'{timestamp()} > {plane_id} is moving from the {runway_id} to a station... (Estimated Time: {data.getDistance()/2} secs)')
 
                 # Plane is taking off
                 else:
-                    print(f'{timestamp()} > {plane_id} started taking off from the {runway_id} at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} started taking off from the {runway_id}...')
 
             ## LANDING/TAKEOFF concluded
             elif performative == "end_action":
