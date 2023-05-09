@@ -36,8 +36,8 @@ if __name__ == '__main__':
                 print('-h, --help : Show options')
                 print('-p, --planes [number of planes] : Set number of initial planes. They will be split between landing/taking off, and passengers/shipping.')
                 print('-s, --stations [number of stations] : Set number of stations. They will be split between passengers/shipping, and automatically filled with the already landed planes.')
-                print('-r, --runways [number of runways] : Set number of runways. They will be split between for landing/takeoff.')
-                print('-m, --multirunway : All runways can handle both landings and takeoffs.\n')
+                print('-r, --runways [number of runways] : Set number of runways. They will be split between for landing/takeoff unless multiuse mode is selected.')
+                print('-m, --multirunway : Multiuse Mode. All runways can handle both landings and takeoffs.\n')
                 exit()
             elif a in ("-p", "--planes"):
                 MAX_PLANES = int(v)
