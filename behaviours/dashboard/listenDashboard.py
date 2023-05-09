@@ -47,27 +47,29 @@ class listenDashboardBehav(CyclicBehaviour):
             elif performative == "start_action":
                 plane_id = msg.body.split("@", 1)[0]
                 data = self.actions[plane_id]
+                runway_id = data.getRunwayId().split("@", 1)[0]
 
                 # Plane started landing
                 if data.getRequestAction() == Action.LANDING:
-                    print(f'{timestamp()} > {plane_id} started landing on the runway at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} started landing on the {runway_id} at {data.getRunwayCoords()}...')
 
                 # Plane is moving to runway
                 else:
-                    print(f'{timestamp()} > {plane_id} is moving from the station at {data.getStationCoords()} to the runway at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} is moving from the station at {data.getStationCoords()} to the {runway_id} at {data.getRunwayCoords()}...')
 
             ## LANDING: Plane is moving to station / TAKEOFF: Plane is taking off
             elif performative == "next_action":                
                 plane_id = msg.body.split("@", 1)[0]
                 data = self.actions[plane_id]
+                runway_id = data.getRunwayId().split("@", 1)[0]
 
                 # Plane is moving to station
                 if data.getRequestAction() == Action.LANDING:
-                    print(f'{timestamp()} > {plane_id} is moving from the runway at {data.getRunwayCoords()} to the station at {data.getStationCoords()}...')
+                    print(f'{timestamp()} > {plane_id} is moving from the {runway_id} at {data.getRunwayCoords()} to the station at {data.getStationCoords()}...')
 
                 # Plane is taking off
                 else:
-                    print(f'{timestamp()} > {plane_id} started taking off from the runway at {data.getRunwayCoords()}...')
+                    print(f'{timestamp()} > {plane_id} started taking off from the {runway_id} at {data.getRunwayCoords()}...')
 
             ## LANDING/TAKEOFF concluded
             elif performative == "end_action":

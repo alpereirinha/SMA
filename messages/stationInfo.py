@@ -1,8 +1,9 @@
 
 class StationInfo:
-    def __init__(self, plane_id, request_action, runway_coords, station_coords, dist):
+    def __init__(self, plane_id, request_action, runway_id, runway_coords, station_coords, dist):
         self.plane_id = plane_id
         self.request_action = request_action # LANDING / TAKEOFF
+        self.runway_id = runway_id
         self.runway_coords = runway_coords
         self.station_coords = station_coords
         self.distance = dist # distance between station/runway
@@ -12,6 +13,9 @@ class StationInfo:
     
     def getRequestAction(self):
         return self.request_action
+    
+    def getRunwayId(self):
+        return self.runway_id
     
     def getRunwayCoords(self):
         return self.runway_coords
@@ -27,6 +31,9 @@ class StationInfo:
 
     def setRequestAction(self, request_action):
         self.request_action = request_action
+
+    def setRunwayId(self, runway_id):
+        self.runway_id = runway_id
 
     def setRunwayCoords(self, runway_coords):
         self.runway_coords = runway_coords

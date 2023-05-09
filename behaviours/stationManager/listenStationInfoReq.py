@@ -5,7 +5,7 @@ from classes.enums import *
 import math
 import jsonpickle
 
-class rcvStationInfoReqBehav(CyclicBehaviour):
+class listenStationInfoReqBehav(CyclicBehaviour):
 
     async def on_start(self):
         self.runways = self.get("runways")
@@ -35,6 +35,9 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                     # Find closest runway to current coordinates
                     curr_coords = msg_data.getPlaneCoords()
                     closest_runway = get_closest(curr_coords, available_runways)
+                    closest_runway_coords = closest_runway[0]
+                    closest_runway_dist = closest_runway[1]
+                    closest_runway_id = self.runways[closest_runway_coords].id
 
                     # If LANDING check for closest compatible station
                     if req_action == Action.LANDING:
@@ -50,11 +53,13 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                         if len(available_stations) > 0 :
                             
                             # Find closest station to runway
-                            closest_station = get_closest(closest_runway[0], available_stations)
+                            closest_station = get_closest(closest_runway_coords, available_stations)
+                            closest_station_coords = closest_station[0]
+                            closest_station_dist = closest_station[1]
 
                             # Notify Control Tower
                             reply_msg = msg.make_reply()
-                            info = StationInfo(plane_id, req_action, closest_runway[0], closest_station[0], closest_station[1])
+                            info = StationInfo(plane_id, req_action, closest_runway_id, closest_runway_coords, closest_station_coords, closest_station_dist)
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "confirm_landing")
                             await self.send(reply_msg)    
@@ -71,7 +76,7 @@ class rcvStationInfoReqBehav(CyclicBehaviour):
                     else:
                         # Notify Control Tower
                         reply_msg = msg.make_reply()
-                        info = StationInfo(plane_id, req_action, closest_runway[0], curr_coords, closest_runway[1])
+                        info = StationInfo(plane_id, req_action, closest_runway_id, closest_runway_coords, curr_coords, closest_runway_dist)
                         reply_msg.body = jsonpickle.encode(info)
                         reply_msg.set_metadata("performative", "confirm_takeoff")
                         await self.send(reply_msg)          

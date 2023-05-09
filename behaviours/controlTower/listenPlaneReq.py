@@ -3,7 +3,7 @@ from spade.message import Message
 from classes.enums import Action
 import jsonpickle
 
-class rcvPlaneReqBehav(CyclicBehaviour):
+class listenPlaneReqBehav(CyclicBehaviour):
 
     async def on_start(self):
         self.multi = self.get("multi_mode")

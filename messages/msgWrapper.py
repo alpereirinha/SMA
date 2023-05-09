@@ -1,5 +1,5 @@
 
-class msgWrapper:
+class MsgWrapper:
     def __init__(self, body, dest, performative):
         self.body = body
         self.dest = dest

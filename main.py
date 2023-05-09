@@ -1,4 +1,5 @@
 from agents.controlTower import ControlTowerAgent
+from agents.runway import RunwayAgent
 from agents.stationManager import StationManagerAgent
 from agents.plane import PlaneAgent
 from agents.dashboard import DashboardAgent
@@ -70,22 +71,23 @@ if __name__ == '__main__':
     runway_agents = []
     runways = {}
     for i in range(MAX_RUNWAYS):
-        rw_jid = "runwayhandler" + str(i+1) + XMPP_SERVER
-        rw = PlaneAgent(rw_jid, PASSWORD)
+        rw_jid = "runway" + str(i+1) + XMPP_SERVER
+        rw = RunwayAgent(rw_jid, PASSWORD)
+        rw.set('controlTower_jid', controlTower_jid)
 
         if MULTI_RUNWAY:
             rw.set("landing_mode", True)
             rw.set("takeoff_mode", True)
-            runways[(0, 10*i)] = Runway(Action.MULTI, '')
+            runways[(0, 10*i)] = Runway(rw_jid, Action.MULTI, '')
         else:
             if i < MAX_RUNWAYS/2:
                 rw.set("landing_mode", True)
                 rw.set("takeoff_mode", False)
-                runways[(0, 10*i)] = Runway(Action.LANDING, '')
+                runways[(0, 10*i)] = Runway(rw_jid, Action.LANDING, '')
             else:
                 rw.set("landing_mode", False)
                 rw.set("takeoff_mode", True)
-                runways[(50, 10*i)] = Runway(Action.TAKEOFF, '')
+                runways[(50, 10*i)] = Runway(rw_jid, Action.TAKEOFF, '')
 
         rw.start()
         runway_agents.append(rw)
