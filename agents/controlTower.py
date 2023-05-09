@@ -2,8 +2,8 @@ from spade.agent import Agent
 from behaviours.controlTower.listenPlaneReq import listenPlaneReqBehav
 from behaviours.controlTower.processQueues import processQueuesBehav
 from behaviours.controlTower.processQueueMulti import processQueueMultiBehav
-from behaviours.controlTower.handleLanding import handleLandingBehav
-from behaviours.controlTower.handleTakeoff import handleTakeoffBehav
+from behaviours.controlTower.listenStationInfo import listenStationInfoBehav
+from behaviours.controlTower.listenRunwayInfo import listenRunwayInfoBehav
 
 class ControlTowerAgent(Agent):
 
@@ -15,11 +15,11 @@ class ControlTowerAgent(Agent):
         print('Starting Control Tower...')
 
         behav_listenPlaneReq = listenPlaneReqBehav()
-        behav_handleLanding = handleLandingBehav()
-        behav_handleTakeoff = handleTakeoffBehav()
+        behav_listenStationInfo = listenStationInfoBehav()
+        behav_listenRunwayInfo = listenRunwayInfoBehav()
         self.add_behaviour(behav_listenPlaneReq)
-        self.add_behaviour(behav_handleLanding)
-        self.add_behaviour(behav_handleTakeoff)
+        self.add_behaviour(behav_listenStationInfo)
+        self.add_behaviour(behav_listenRunwayInfo)
 
         if self.get("multi_mode"):
             behav_processQueueMulti = processQueueMultiBehav()

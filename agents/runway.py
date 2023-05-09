@@ -1,11 +1,14 @@
 from spade.agent import Agent
+from behaviours.runway.handleLanding import handleLandingBehav
+from behaviours.runway.handleTakeoff import handleTakeoffBehav
 
 class RunwayAgent(Agent):
 
     async def setup(self):
-        print('Starting Runway...')
-
         if self.get("landing_mode"):
-            pass # add handlelanding
+            behav_handleLanding = handleLandingBehav()
+            self.add_behaviour(behav_handleLanding)
+        
         if self.get("takeoff_mode"):
-            pass # add handletakeoff
+            behav_handleTakeoff = handleTakeoffBehav()
+            self.add_behaviour(behav_handleTakeoff)

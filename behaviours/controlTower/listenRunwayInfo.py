@@ -10,13 +10,15 @@ class listenRunwayInfoBehav(CyclicBehaviour):
         if msg:
             performative = msg.get_metadata("performative")
 
-            # Redirect Message
+            # Redirect message to the relevant agent
             if performative == "redirect":
                 data = jsonpickle.decode(msg.body)
                 dest = data.getDest()
                 
+                # Must get destination from knowledge base
                 if '_jid' in dest:
                     new_msg = Message(to=self.get(dest))
+                # Already has the destination jid
                 else:
                     new_msg = Message(to=dest)
                     

@@ -24,46 +24,44 @@ class handleLandingBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
-                # Remove request from queue
-
                 # Confirm landing (notify dashboard)
                 new_msg = MsgWrapper(msg.body, "dashboard_jid", "confirm")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
 
                 # Occupy runway (notify station manager)
                 body = StationUpdate(plane_id, msg_data.getRunwayCoords())
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_runway")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
 
                 # Occupy station (notify station manager)
                 body = StationUpdate(plane_id, msg_data.getStationCoords())
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_station")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
 
                 # Update max_landing_queue (one less free space) (just for control tower)
-                msg = Message(to=self.get("controlTower_jid"))
-                msg.set_metadata("performative", "sub_max_queue")
-                await self.send(msg)
+                new_msg = Message(to=self.get("controlTower_jid"))
+                new_msg.set_metadata("performative", "sub_max_queue")
+                await self.send(new_msg)
 
                 # Wait out landing (notify dashboard)
                 new_msg = MsgWrapper(plane_id, "dashboard_jid", "start_action")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
                 await asyncio.sleep(10)
 
                 # Wait out moving from runway to station (notify dashboard)
                 new_msg = MsgWrapper(plane_id, "dashboard_jid", "next_action")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
                 await asyncio.sleep(msg_data.getDistance()/2)
 
                 # Free runway (notify station manager)
                 body = StationUpdate('', msg_data.getRunwayCoords())
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_runway")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
 
                 # Update Plane State (notify plane)
                 new_msg = MsgWrapper(str(msg_data.getStationCoords()), plane_id, "update")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)
 
                 # Landing concluded (notify dashboard)
                 new_msg = MsgWrapper(plane_id, "dashboard_jid", "end_action")
-                self.sendToControlTower(new_msg)
+                await self.sendToControlTower(new_msg)

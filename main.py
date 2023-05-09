@@ -36,7 +36,7 @@ if __name__ == '__main__':
                 print('-h, --help : Show options')
                 print('-p, --planes [number of planes] : Set number of initial planes. They will be split between landing/taking off, and passengers/shipping.')
                 print('-s, --stations [number of stations] : Set number of stations. They will be split between passengers/shipping, and automatically filled with the already landed planes.')
-                print('-r, --runways [number of runwayss] : Set number of runways. They will be split between for landing/takeoff.')
+                print('-r, --runways [number of runways] : Set number of runways. They will be split between for landing/takeoff.')
                 print('-m, --multirunway : All runways can handle both landings and takeoffs.\n')
                 exit()
             elif a in ("-p", "--planes"):
@@ -91,12 +91,6 @@ if __name__ == '__main__':
 
         rw.start()
         runway_agents.append(rw)
-            
-    #if MULTI_RUNWAY:
-    #    runways[(0, 0)] = Runway(Action.MULTI, '')
-    #else:
-    #    runways[(0, 0)] = Runway(Action.LANDING, '')
-    #    runways[(50, 50)] = Runway(Action.TAKEOFF, '')
 
     # Coordinates options for stations
     coords_x = random.sample(range(10, 40), MAX_STATIONS)
