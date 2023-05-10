@@ -24,10 +24,6 @@ class handleTakeoffBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
-                # Confirm takeoff (notify dashboard)
-                new_msg = MsgWrapper(msg.body, "dashboard_jid", "confirm")
-                await self.sendToControlTower(new_msg)
-
                 # Occupy runway (notify station manager)
                 body = StationUpdate(plane_id, msg_data.getRunwayCoords())
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_runway")
@@ -43,7 +39,7 @@ class handleTakeoffBehav(CyclicBehaviour):
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_station")
                 await self.sendToControlTower(new_msg)
 
-                # Update max_landing_queue (one more free space) (just for control tower)
+                # Add a free space to max_landing_queue (notify control tower)
                 new_msg = Message(to=self.get("controlTower_jid"))
                 new_msg.set_metadata("performative", "add_max_queue")
                 await self.send(new_msg)

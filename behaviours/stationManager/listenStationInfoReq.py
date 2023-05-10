@@ -1,7 +1,7 @@
 from spade.behaviour import CyclicBehaviour
 from messages.stationInfo import StationInfo
 from messages.requestDelay import RequestDelay
-from classes.enums import *
+from classes.enums import Action
 import math
 import jsonpickle
 
