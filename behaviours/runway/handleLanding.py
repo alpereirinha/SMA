@@ -24,6 +24,10 @@ class handleLandingBehav(CyclicBehaviour):
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId())
 
+                # Confirm landing started (notify plane)
+                new_msg = MsgWrapper('', plane_id, "start_landing")
+                await self.sendToControlTower(new_msg)
+
                 # Occupy runway (notify station manager)
                 body = StationUpdate(plane_id, msg_data.getRunwayCoords())
                 new_msg = MsgWrapper(jsonpickle.encode(body), "stationManager_jid", "update_runway")

@@ -1,6 +1,6 @@
 from spade.behaviour import CyclicBehaviour
 from messages.stationInfo import StationInfo
-from messages.requestDelay import RequestDelay
+from messages.requestIssue import RequestIssue
 from classes.enums import Action
 import math
 import jsonpickle
@@ -67,7 +67,7 @@ class listenStationInfoReqBehav(CyclicBehaviour):
                         # If no station available
                         else:
                             reply_msg = msg.make_reply()
-                            info = RequestDelay(plane_id, req_action, 'No Station Available')
+                            info = RequestIssue(plane_id, req_action, 'No Station Available')
                             reply_msg.body = jsonpickle.encode(info)
                             reply_msg.set_metadata("performative", "delay")
                             await self.send(reply_msg)
@@ -84,7 +84,7 @@ class listenStationInfoReqBehav(CyclicBehaviour):
                 # If no runway available
                 else:
                     reply_msg = msg.make_reply()
-                    info = RequestDelay(plane_id, req_action, 'No Runway Available')
+                    info = RequestIssue(plane_id, req_action, 'No Runway Available')
                     reply_msg.body = jsonpickle.encode(info)
                     reply_msg.set_metadata("performative", "delay")
                     await self.send(reply_msg)

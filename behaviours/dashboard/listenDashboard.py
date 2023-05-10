@@ -22,8 +22,9 @@ class listenDashboardBehav(CyclicBehaviour):
 
             ## Plane cancelled landing request
             elif performative == "cancel_request":
-                plane_id = msg.body.split("@", 1)[0]
-                print(f'{timestamp()} > LANDING *cancelled* for {plane_id}. Plane will head to another airport. (Cancelled Request)')
+                msg_data = jsonpickle.decode(msg.body)
+                plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
+                print(f'{timestamp()} > LANDING *cancelled* for {plane_id}. Plane will head to another airport. ({msg_data.getIssue()})')
 
             ## Control Tower confirmed landing/takeoff
             elif performative == "confirm":

@@ -10,7 +10,7 @@ class listenStationResponseBehav(CyclicBehaviour):
         if msg:
             performative = msg.get_metadata("performative")
 
-            # LANDING/TAKEOFF request accepted
+            ## LANDING/TAKEOFF request accepted
             if performative == "confirm_landing" or performative == "confirm_takeoff":
                 msg_data = jsonpickle.decode(msg.body)
                 runway_id = str(msg_data.getRunwayId())
@@ -34,3 +34,10 @@ class listenStationResponseBehav(CyclicBehaviour):
                 runway_msg.body = msg.body
                 runway_msg.set_metadata("performative", performative)
                 await self.send(runway_msg)
+
+            ## LANDING/TAKEOFF request delayed
+            #elif performative == "delay":
+            #    dashboard_msg = Message(to=self.get("dashboard_jid"))
+            #    dashboard_msg.body = msg.body
+            #    dashboard_msg.set_metadata("performative", "delay")
+            #    await self.send(dashboard_msg)

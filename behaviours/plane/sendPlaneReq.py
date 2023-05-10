@@ -1,10 +1,19 @@
 from spade.behaviour import OneShotBehaviour
 from spade.message import Message
 from messages.planeRequestFull import PlaneRequestFull
+from messages.requestIssue import RequestIssue
 from classes.enums import Action, PlaneState
 import jsonpickle
 
 class sendPlaneReqBehav(OneShotBehaviour):
+
+    async def cancelRequest(self, issue):
+        cancel_msg = Message(to=self.get("controlTower_jid"))
+        info = RequestIssue(str(self.agent.jid), Action.LANDING, issue)
+        cancel_msg.body = jsonpickle.encode(info)
+        cancel_msg.set_metadata("performative", "cancel_request")
+        await self.send(cancel_msg)
+        await self.agent.stop()
 
     async def on_start(self):
         self.type = self.get("type")
@@ -28,13 +37,17 @@ class sendPlaneReqBehav(OneShotBehaviour):
         msg.set_metadata("performative", "request")
         await self.send(msg)
 
-        # If flying, await some response. Timeout and try another airport if no response after a minute.
+        # If flying, await some response 
         if self.state == PlaneState.FLYING:
             response = await self.receive(timeout=60)
 
+            # Timeout and try another airport if no response after a minute
             if not response:
-                cancel_msg = Message(to=self.get("controlTower_jid"))
-                cancel_msg.body = str(self.agent.jid)
-                cancel_msg.set_metadata("performative", "cancel_request")
-                await self.send(cancel_msg)
-                await self.agent.stop()
+                await self.cancelRequest("No Response")
+
+            # Timeout and try another airport if still on queue after 2 minutes
+            else:
+                if response.get_metadata("performative") == "ok":
+                    msg = await self.receive(timeout=120)
+                    if not msg:
+                        await self.cancelRequest("Timed out")

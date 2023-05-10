@@ -81,8 +81,8 @@ class listenPlanesBehav(CyclicBehaviour):
                 await self.send(dashboard_msg)
 
                 # Remove request from queue
+                msg_data = jsonpickle.decode(msg.body)
                 if self.multi:
-                    self.agent.multi_queue = [req for req in self.agent.multi_queue if str(req.getPlaneId()) != msg.body]
+                    self.agent.multi_queue = [req for req in self.agent.multi_queue if str(req.getPlaneId()) != str(msg_data.getPlaneId())]
                 else:
-                    self.agent.landing_queue = [req for req in self.agent.landing_queue if str(req.getPlaneId()) != msg.body]
-                
+                    self.agent.landing_queue = [req for req in self.agent.landing_queue if str(req.getPlaneId()) != str(msg_data.getPlaneId())]
