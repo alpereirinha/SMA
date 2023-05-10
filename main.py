@@ -25,31 +25,8 @@ MAX_STATIONS = 6
 MAX_RUNWAYS = 2
 MULTI_RUNWAY = False
 
-if __name__ == '__main__':
-
-    # Use command line options to set number of planes and stations
-    try:
-        args, vals = getopt.getopt(sys.argv[1:], "hp:s:r:m", ["help", "planes", "stations", "runways", "multirunway"])
-        for a, v in args:
-            if a in ("-h", "--help"):
-                print('\n*** Options ***\n')
-                print('-h, --help : Show options')
-                print('-p, --planes [number of planes] : Set number of initial planes. They will be split between landing/taking off, and passengers/shipping.')
-                print('-s, --stations [number of stations] : Set number of stations. They will be split between passengers/shipping, and automatically filled with the already landed planes.')
-                print('-r, --runways [number of runways] : Set number of runways. They will be split between for landing/takeoff unless multiuse mode is selected.')
-                print('-m, --multirunway : Multiuse Mode. All runways can handle both landings and takeoffs.\n')
-                exit()
-            elif a in ("-p", "--planes"):
-                MAX_PLANES = int(v)
-            elif a in ("-s", "--stations"):
-                MAX_STATIONS = int(v)
-            elif a in ("-r", "--runways"):
-                MAX_RUNWAYS = int(v)
-            elif a in ("-m", "--multirunway"):
-                MULTI_RUNWAY = True
-    except getopt.error as err:
-        print(str(err))
-
+# Run Agents
+def run():
     # Set JIDs and Agents
     dashboard_jid = "dashboard" + XMPP_SERVER
     controlTower_jid = "controltower" + XMPP_SERVER
@@ -165,3 +142,54 @@ if __name__ == '__main__':
     
     print('Agents stopped.')
     quit_spade()
+
+
+# Setup Command Line Options
+if __name__ == '__main__':
+    error = ''
+    try:
+        args, vals = getopt.getopt(sys.argv[1:], "hp:s:r:m", ["help", "planes", "stations", "runways", "multirunway"])
+        for a, v in args:
+            
+            if a in ("-h", "--help"):
+                print('\n\n*** Options ***\n')
+                print('-h, --help : Show options')
+                print('-p, --planes [number of planes] : Set number of initial planes. They will be split between landing/taking off, and passengers/shipping.')
+                print('-s, --stations [number of stations] : Set number of stations. They will be split between passengers/shipping, and automatically filled with the already landed planes.')
+                print('-r, --runways [number of runways] : Set number of runways. They will be split between for landing/takeoff unless multiuse mode is selected.')
+                print('-m, --multirunway : Multiuse Mode. All runways can handle both landings and takeoffs.')
+                error = '\n'
+            
+            elif a in ("-p", "--planes"):
+                if v.isnumeric() and int(v) > 0:
+                    MAX_PLANES = int(v)
+                else:
+                    error = '[Error] Invalid number of planes.'
+           
+            elif a in ("-s", "--stations"):
+                if v.isnumeric() and int(v) > 0:
+                    MAX_STATIONS = int(v)
+                else:
+                    error = '[Error] Invalid number of stations.'
+            
+            elif a in ("-r", "--runways"):
+                if v.isnumeric() and int(v) > 0:
+                    MAX_RUNWAYS = int(v)
+                else:
+                    error = '[Error] Invalid number of runways.'
+            
+            elif a in ("-m", "--multirunway"):
+                MULTI_RUNWAY = True
+    
+    except getopt.error as err:
+        print(str(err))
+        
+    if error:
+        print(error)
+    else:
+        if MAX_PLANES/2 > MAX_STATIONS:
+            print('[Error] Not enough stations for number of landed planes.')
+        elif MAX_RUNWAYS < 2 and not MULTI_RUNWAY:
+            print('[Error] No takeoff runway. Set larger number of runways or use multiuses mode.')
+        else:
+            run()
