@@ -23,10 +23,10 @@ class listenStationResponseBehav(CyclicBehaviour):
                 elif performative == "confirm_takeoff":
                     self.agent.takeoff_queue.pop(0)
 
-                # Notify Dashboard that request was confirmed
+                # Notify Dashboard that request will start being processed
                 dashboard_msg = Message(to=self.get("dashboard_jid"))
                 dashboard_msg.body = msg.body
-                dashboard_msg.set_metadata("performative", "confirm")
+                dashboard_msg.set_metadata("performative", "start_process")
                 await self.send(dashboard_msg)
 
                 # Redirect info to respective runway, to process the LANDING/TAKEOFF

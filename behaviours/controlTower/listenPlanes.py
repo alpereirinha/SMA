@@ -49,6 +49,12 @@ class listenPlanesBehav(CyclicBehaviour):
                             self.agent.multi_queue.append(req)
                         else:
                             self.agent.landing_queue.append(req)
+
+                        # Notify Dashboard (confirm request was added to queue)
+                        dashboard_msg = Message(to=self.get("dashboard_jid"))
+                        dashboard_msg.body = jsonpickle.encode(req)
+                        dashboard_msg.set_metadata("performative", "confirm")
+                        await self.send(dashboard_msg)
                     
                     # If queue full
                     else:
@@ -57,7 +63,7 @@ class listenPlanesBehav(CyclicBehaviour):
                         plane_msg.set_metadata("performative", "refuse")
                         await self.send(plane_msg)
 
-                        # Notify Dashboard
+                        # Notify Dashboard (request was refused and not added to queue)
                         dashboard_msg = Message(to=self.get("dashboard_jid"))
                         dashboard_msg.body = plane_id
                         dashboard_msg.set_metadata("performative", "refuse")
@@ -70,6 +76,12 @@ class listenPlanesBehav(CyclicBehaviour):
                         self.agent.multi_queue.append(req)
                     else:
                         self.agent.takeoff_queue.append(req)
+
+                    # Notify Dashboard (confirm request was added to queue)
+                    dashboard_msg = Message(to=self.get("dashboard_jid"))
+                    dashboard_msg.body = jsonpickle.encode(req)
+                    dashboard_msg.set_metadata("performative", "confirm")
+                    await self.send(dashboard_msg)
 
             # Received cancellation of LANDING request
             elif performative == "cancel_request":

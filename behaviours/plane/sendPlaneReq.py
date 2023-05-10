@@ -50,4 +50,4 @@ class sendPlaneReqBehav(OneShotBehaviour):
                 if response.get_metadata("performative") == "ok":
                     msg = await self.receive(timeout=120)
                     if not msg:
-                        await self.cancelRequest("Timed out")
+                        await self.cancelRequest("Timed Out")

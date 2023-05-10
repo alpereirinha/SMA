@@ -26,12 +26,11 @@ class listenDashboardBehav(CyclicBehaviour):
                 plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
                 print(f'{timestamp()} > LANDING *cancelled* for {plane_id}. Plane will head to another airport. ({msg_data.getIssue()})')
 
-            ## Control Tower confirmed landing/takeoff
+            ## Control Tower approved request to queue
             elif performative == "confirm":
                 msg_data = jsonpickle.decode(msg.body)
                 plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
-                print(f'{timestamp()} > {msg_data.getRequestAction().name} *approved* for {plane_id}.')
-                self.actions[plane_id] = msg_data
+                print(f'{timestamp()} > {msg_data.getRequestAction().name} *approved* for {plane_id}. Plane is on queue.')
 
             ## Control Tower refused plane landing
             elif performative == "refuse":
@@ -44,6 +43,13 @@ class listenDashboardBehav(CyclicBehaviour):
             #    plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
             #    print(f'{timestamp()} > {msg_data.getRequestAction().name} *delayed* for {plane_id}. ({msg_data.getIssue()})')
 
+            ## Runway started processing landing/takeoff
+            elif performative == "start_process":
+                msg_data = jsonpickle.decode(msg.body)
+                plane_id = str(msg_data.getPlaneId()).split("@", 1)[0]
+                print(f'{timestamp()} > {msg_data.getRequestAction().name} *process started* for {plane_id}.')
+                self.actions[plane_id] = msg_data
+            
             ## LANDING: Plane started landing / TAKEOFF: Plane is moving to runway
             elif performative == "start_action":
                 plane_id = msg.body.split("@", 1)[0]

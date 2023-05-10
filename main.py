@@ -14,15 +14,15 @@ XMPP_SERVER = '@sara-pc'
 PASSWORD = '1234'
 
 ## Plane Default Options
-MAX_PLANES = 4
+STARTING_PLANES = 4
 companies = ['TAP', 'RyanAir', 'Delta', 'AirFrance']
 locations = ['Lisbon', 'Madrid', 'Paris', 'London', 'Dublin', 'Berlin']
 
 ## Station Default Options
-MAX_STATIONS = 6
+STATIONS = 6
 
 ## Runway Default Options
-MAX_RUNWAYS = 2
+RUNWAYS = 2
 MULTI_RUNWAY = False
 
 # Run Agents
@@ -39,7 +39,7 @@ def run():
     # Setup and Start Control Tower
     controlTower.set('stationManager_jid', stationManager_jid)
     controlTower.set('dashboard_jid', dashboard_jid)
-    controlTower.set('max_landing_queue', MAX_STATIONS - math.ceil(MAX_PLANES/2))
+    controlTower.set('max_landing_queue', STATIONS - math.ceil(STARTING_PLANES/2))
     controlTower.set('multi_mode', MULTI_RUNWAY)
     res_controlTower = controlTower.start()
     res_controlTower.result()
@@ -47,7 +47,7 @@ def run():
     # Prepare Runways / Setup and Start Runways
     runway_agents = []
     runways = {}
-    for i in range(MAX_RUNWAYS):
+    for i in range(RUNWAYS):
         rw_jid = "runway" + str(i+1) + XMPP_SERVER
         rw = RunwayAgent(rw_jid, PASSWORD)
         rw.set('controlTower_jid', controlTower_jid)
@@ -57,7 +57,7 @@ def run():
             rw.set("takeoff_mode", True)
             runways[(0, 10*i)] = Runway(rw_jid, Action.MULTI, '')
         else:
-            if i < MAX_RUNWAYS/2:
+            if i < RUNWAYS/2:
                 rw.set("landing_mode", True)
                 rw.set("takeoff_mode", False)
                 runways[(0, 10*i)] = Runway(rw_jid, Action.LANDING, '')
@@ -70,19 +70,19 @@ def run():
         runway_agents.append(rw)
 
     # Coordinates options for stations
-    coords_x = random.sample(range(10, 40), MAX_STATIONS)
-    coords_y = random.sample(range(10, 40), MAX_STATIONS)
+    coords_x = random.sample(range(10, 40), STATIONS)
+    coords_y = random.sample(range(10, 40), STATIONS)
     coords = list(zip(coords_x, coords_y))
 
     # Prepare Stations
     stations = {}
-    for i in range(MAX_STATIONS):
+    for i in range(STATIONS):
         if i%2:
             planetype = PlaneType.SHIPPING
         else:
             planetype = PlaneType.PASSENGERS
 
-        if i < MAX_PLANES/2 or i >= MAX_PLANES:
+        if i < STARTING_PLANES/2:
             planelanded = "plane" + str(i+1) + XMPP_SERVER
         else:
             planelanded = ''
@@ -101,7 +101,23 @@ def run():
 
     # Setup and Start Planes
     plane_agents = []
-    for i in range(MAX_PLANES):
+    i = 0
+    while controlTower.is_alive():
+
+        # Wait 10 seconds to add a new plane after starting batch
+        if i >= STARTING_PLANES:
+            try:
+                time.sleep(10)
+            except KeyboardInterrupt:
+                controlTower.stop()
+                stationManager.stop()
+                dashboard.stop()
+                for r in runway_agents:
+                    r.stop()
+                for p in plane_agents:
+                    p.stop()
+                break
+
         plane_jid = "plane" + str(i+1) + XMPP_SERVER
         plane = PlaneAgent(plane_jid, PASSWORD)
 
@@ -116,7 +132,7 @@ def run():
         else:
             plane.set('type', PlaneType.PASSENGERS)
 
-        if i < MAX_PLANES/2:
+        if i < STARTING_PLANES/2:
             plane.set('state', PlaneState.LANDED)
             plane.set('coordinates', coords[i])
         else:
@@ -125,20 +141,7 @@ def run():
 
         plane.start()
         plane_agents.append(plane)
-
-    # Run
-    while controlTower.is_alive():
-        try:
-            time.sleep(1)
-        except KeyboardInterrupt:
-            controlTower.stop()
-            stationManager.stop()
-            dashboard.stop()
-            for r in runway_agents:
-                r.stop()
-            for p in plane_agents:
-                p.stop()
-            break
+        i += 1
     
     print('Agents stopped.')
     quit_spade()
@@ -162,19 +165,19 @@ if __name__ == '__main__':
             
             elif a in ("-p", "--planes"):
                 if v.isnumeric() and int(v) > 0:
-                    MAX_PLANES = int(v)
+                    STARTING_PLANES = int(v)
                 else:
                     error = '[Error] Invalid number of planes.'
            
             elif a in ("-s", "--stations"):
                 if v.isnumeric() and int(v) > 0:
-                    MAX_STATIONS = int(v)
+                    STATIONS = int(v)
                 else:
                     error = '[Error] Invalid number of stations.'
             
             elif a in ("-r", "--runways"):
                 if v.isnumeric() and int(v) > 0:
-                    MAX_RUNWAYS = int(v)
+                    RUNWAYS = int(v)
                 else:
                     error = '[Error] Invalid number of runways.'
             
@@ -187,9 +190,9 @@ if __name__ == '__main__':
     if error:
         print(error)
     else:
-        if MAX_PLANES/2 > MAX_STATIONS:
+        if STARTING_PLANES/2 > STATIONS:
             print('[Error] Not enough stations for number of landed planes.')
-        elif MAX_RUNWAYS < 2 and not MULTI_RUNWAY:
+        elif RUNWAYS < 2 and not MULTI_RUNWAY:
             print('[Error] No takeoff runway. Set larger number of runways or use multiuses mode.')
         else:
             run()
