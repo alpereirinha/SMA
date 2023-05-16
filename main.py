@@ -170,8 +170,10 @@ if __name__ == '__main__':
                     error = '[Error] Invalid number of planes.'
            
             elif a in ("-s", "--stations"):
-                if v.isnumeric() and int(v) > 0:
+                if v.isnumeric() and int(v) > 1:
                     STATIONS = int(v)
+                elif int(v) == 1:
+                    error = '[Error] No stations for shipping planes. Set larger number of stations.'
                 else:
                     error = '[Error] Invalid number of stations.'
             
@@ -189,10 +191,9 @@ if __name__ == '__main__':
         
     if error:
         print(error)
+    elif STARTING_PLANES/2 > STATIONS:
+        print('[Error] Not enough stations for number of landed planes.')
+    elif RUNWAYS < 2 and not MULTI_RUNWAY:
+        print('[Error] No takeoff runway. Set larger number of runways or use multiuses mode.')
     else:
-        if STARTING_PLANES/2 > STATIONS:
-            print('[Error] Not enough stations for number of landed planes.')
-        elif RUNWAYS < 2 and not MULTI_RUNWAY:
-            print('[Error] No takeoff runway. Set larger number of runways or use multiuses mode.')
-        else:
-            run()
+        run()
