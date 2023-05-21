@@ -10,8 +10,8 @@ from spade import quit_spade
 import sys, getopt, time, random, math
 
 ## Server Info
-XMPP_SERVER = '@sara-pc'
-PASSWORD = '1234'
+XMPP_SERVER = '@pereira'
+PASSWORD = 'Anabela49995'
 
 ## Plane Default Options
 STARTING_PLANES = 4
